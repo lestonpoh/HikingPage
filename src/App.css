@@ -12,29 +12,15 @@ html{
   font-family: Montserrat-Regular;
 }
 
-.display-flex{
-  display: flex;
+a{
+  text-decoration: none;
+  color: inherit
 }
 
-.align-items-center{
-  align-items: center;
+.font-bold{
+  font-family: Montserrat-Bold
 }
 
-.justify-content-space-between{
-  justify-content: space-between;
-}
-
-/* buttons */
-.button{
-  font-family: Montserrat-Bold;
-  border-radius: 50%;
-  height: 40px;
-  font-size: 13px;
-  padding: 11px 20px;
-  display: inline-flex;
-  align-items: center ;
-  justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  border: none;
+.font-regular{
+  font-family: Montserrat-Regular
 }

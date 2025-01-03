@@ -1,5 +1,12 @@
+import Header from "../components_common/Header";
+
 function About() {
-  return <h1>About fefewgw</h1>;
+  return (
+    <>
+      <Header />
+      <h1>About fefewgw</h1>;
+    </>
+  );
 }
 
 export default About;
