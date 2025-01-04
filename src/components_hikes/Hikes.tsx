@@ -1,5 +1,6 @@
 import Layout from "../components_common/Layout";
 import HikesList from "../components_hikes/HikesList";
+import "./Hikes.css";
 
 function Hikes() {
   return (

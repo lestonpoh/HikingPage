@@ -1,7 +1,0 @@
-.hikes-list{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    justify-items: center;
-    gap:10px;
-    margin: 20px auto;
-}
