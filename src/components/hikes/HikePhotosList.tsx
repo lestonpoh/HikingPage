@@ -1,10 +1,10 @@
-interface Photo {
+export interface HikePhoto {
   id: number;
   url: string;
 }
 
 interface Props {
-  photos: Photo[];
+  photos: HikePhoto[];
 }
 
 function HikePhotoList({ photos }: Props) {

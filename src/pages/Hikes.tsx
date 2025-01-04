@@ -1,5 +1,5 @@
-import Layout from "../components_common/Layout";
-import HikesList from "../components_hikes/HikesList";
+import Layout from "../layout/Layout.tsx";
+import HikesList from "../components/hikes/HikesList.tsx";
 import "./Hikes.css";
 
 function Hikes() {

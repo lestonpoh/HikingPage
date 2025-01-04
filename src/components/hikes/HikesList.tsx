@@ -1,5 +1,5 @@
 import HikeItem from "./HikeItem";
-import { hikes } from "../hikestemp";
+import { hikes } from "../../hikestemp";
 import { useNavigate } from "react-router-dom";
 
 function HikesList() {

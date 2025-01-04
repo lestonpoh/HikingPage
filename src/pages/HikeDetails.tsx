@@ -1,16 +1,31 @@
 import { Navigate, useParams } from "react-router-dom";
 import { hikes } from "../hikestemp";
 import { useEffect, useState } from "react";
-import HikePhotoList from "./HikePhotosList";
+import HikePhotoList, { HikePhoto } from "../components/hikes/HikePhotosList";
 
-interface Photo {
-  id: number;
-  url: string;
+interface HikeDetails {
+  name: string;
+  description: string;
+  location: string;
+  access: string;
+  elevation: number;
+  difficulty: number;
+  duration: number;
 }
 
 function HikeDetails() {
   const { name } = useParams();
-  const [photos, setPhotos] = useState<Array<Photo>>([]);
+  const [photos, setPhotos] = useState<Array<HikePhoto>>([]);
+  const [details, setDetails] = useState<HikeDetails>({
+    name: "string",
+    description: "string",
+    location: "string",
+    access: "string",
+    elevation: 1,
+    difficulty: 1,
+    duration: 1,
+  });
+
   let hike = hikes.find((hike) => hike.name === name);
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/photos", { mode: "cors" })
@@ -25,13 +40,18 @@ function HikeDetails() {
       .catch((error) => console.log(error));
   }, []);
 
+  // setDetails();
+  console.log(details);
+
   if (!hike) {
     return <Navigate to="/error" />;
   }
 
   return (
     <>
-      <div></div>
+      <div>
+        <h1>{details.name}</h1>
+      </div>
       <HikePhotoList photos={photos} />
     </>
   );

@@ -1,9 +1,9 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import About from "./components_about/About.tsx";
-import Hikes from "./components_hikes/Hikes.tsx";
-import ErrorPage from "./components_common/ErrorPage.tsx";
-import HikeDetails from "./components_hikes/HikeDetails.tsx";
+import About from "./pages/About.tsx";
+import Hikes from "./pages/Hikes.tsx";
+import ErrorPage from "./layout/ErrorPage.tsx";
+import HikeDetails from "./pages/HikeDetails.tsx";
 
 const router = createBrowserRouter([
   {

@@ -1,4 +1,4 @@
-import Header from "../components_common/Header";
+import Header from "../layout/Header";
 
 function About() {
   return (
