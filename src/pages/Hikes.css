@@ -1,50 +1,37 @@
-
-
-.hikes-list{
-    display: flex;
-    flex-wrap: wrap;
-    margin: 40px auto;
-    padding: 0 20px
+.hikes-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
-@media (min-width: 400px){
-    .hikes-list > div{
-        flex-basis: 100%;
-    }
+@media (min-width: 400px) {
+  .hikes-list > div {
+    flex-basis: 100%;
+  }
 }
 
-@media (min-width: 800px){
-    .hikes-list > div{
-        flex-basis:50%
-    }
+@media (min-width: 800px) {
+  .hikes-list > div {
+    flex-basis: 50%;
+  }
 }
 
-@media (min-width: 1200px){
-    .hikes-list > div{
-        flex-basis: 33%
-    }
+@media (min-width: 1200px) {
+  .hikes-list > div {
+    flex-basis: 33%;
+  }
 }
 
-
-
-.hike-item{
-    display: grid;
-    grid-template-rows: 1fr auto auto;
-    aspect-ratio: 1/1.1;
-    height: auto;
+.hike-item {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  aspect-ratio: 1/1.1;
+  height: auto;
 }
 
-
-.hike-photos-list{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
-    gap: 15px
-}
-
-.photos-list-label{
-    z-index: 2;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
+.hike-photos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
 }

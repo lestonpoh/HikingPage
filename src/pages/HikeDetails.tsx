@@ -1,6 +1,7 @@
 import { Navigate, useParams } from "react-router-dom";
 import { hikes } from "../hikestemp";
 import { useEffect, useState } from "react";
+import Layout from "../layout/Layout";
 
 interface HikeDetails {
   name: string;
@@ -22,9 +23,12 @@ function HikeDetails() {
   const [photos, setPhotos] = useState<HikePhoto[]>([]);
   const [details, setDetails] = useState<HikeDetails>({
     name: "string",
-    description: "string",
-    location: "string",
-    access: "string",
+    description:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, fugiat. Sequi, doloribus temporibus tenetur id minus impedit error consequatur ipsam quisquam illum, reprehenderit totam ea saepe suscipit culpa odit accusamus.",
+    location:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, fugiat. Sequi, doloribus temporibus tenetur id minus impedit error consequatur ipsam quls.",
+    access:
+      "Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, fugiat. Sequi, doloribus temporibus tenetur id minus impedit error consequatur ipsam quisquam illum, reprehenderit totam ea saepe suscipit culpa odit accusamus.",
     elevation: 1,
     difficulty: 1,
     duration: 1,
@@ -49,8 +53,9 @@ function HikeDetails() {
   }
 
   return (
-    <>
-      <div>
+    <Layout>
+      {/* Hike descriptions */}
+      <div className="">
         <h1>{details.name}</h1>
         <div>
           <div>{hike.elevation}m</div>
@@ -58,25 +63,28 @@ function HikeDetails() {
           <div>{hike.duration} h</div>
         </div>
       </div>
-      <div>
-        <h1>Description</h1>
-        <p>{details.description}</p>
+      <div className="max-w-screen-lg mx-auto mb-14 px-2 flex flex-col gap-4">
+        <div className="grid grid-cols-[auto_1fr] gap-6">
+          <h1 className="font-bold">DESCRIPTION</h1>
+          <p>{details.description}</p>
+
+          <h1 className="font-bold">LOCATION</h1>
+          <p>{details.location}</p>
+
+          <h1 className="font-bold">ACCESS</h1>
+          <p>{details.access}</p>
+        </div>
       </div>
-      <div>
-        <h1>Location</h1>
-        <p>{details.location}</p>
-      </div>
-      <div>
-        <h1>Access</h1>
-        <p>{details.access}</p>
-      </div>
+
       <div></div>
+
+      {/* photos gallery */}
       <div className="relative bg-slate-200 ">
-        <div className="photos-list-label inline-block bg-blue-600 text-white font-bold px-3 py1">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-block bg-blue-600 text-white font-bold px-4 py-1 text-xl">
           PHOTO GALLERY
         </div>
         {!photos && <p>Loading...</p>}
-        <div className="max-w-screen-lg py-6 px-8 relative m-auto hike-photos-list">
+        <div className="max-w-screen-lg py-10 px-8 m-auto hike-photos-list">
           {photos.map((photo) => (
             <div key={photo.id}>
               <img src={photo.url}></img>
@@ -84,7 +92,7 @@ function HikeDetails() {
           ))}
         </div>
       </div>
-    </>
+    </Layout>
   );
 }
 
