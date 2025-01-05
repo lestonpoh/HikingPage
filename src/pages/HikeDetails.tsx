@@ -52,7 +52,25 @@ function HikeDetails() {
     <>
       <div>
         <h1>{details.name}</h1>
+        <div>
+          <div>{hike.elevation}m</div>
+          <div>{hike.difficulty}/10</div>
+          <div>{hike.duration} h</div>
+        </div>
       </div>
+      <div>
+        <h1>Description</h1>
+        <p>{details.description}</p>
+      </div>
+      <div>
+        <h1>Location</h1>
+        <p>{details.location}</p>
+      </div>
+      <div>
+        <h1>Access</h1>
+        <p>{details.access}</p>
+      </div>
+      <div></div>
       <div className="relative bg-slate-200 ">
         <div className="photos-list-label inline-block bg-blue-600 text-white font-bold px-3 py1">
           PHOTO GALLERY

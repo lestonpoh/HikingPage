@@ -1,23 +1,21 @@
 @font-face {
-  font-family: 'Montserrat-Regular';
-  src: url('src/assets/fonts/Montserrat-Regular.ttf');
+  font-family: "Montserrat-Regular";
+  src: url("./assets/fonts/Montserrat-Regular.ttf");
 }
 
 @font-face {
-  font-family: 'Montserrat-Bold';
-  src: url('src/assets/fonts/Montserrat-Bold.ttf');
+  font-family: "Montserrat-Bold";
+  src: url("./assets/fonts/Montserrat-Bold.ttf");
 }
 
-html{
+html {
   font-family: Montserrat-Regular;
 }
 
-
-
-.font-bold{
-  font-family: Montserrat-Bold
+.font-bold {
+  font-family: Montserrat-Bold;
 }
 
-.font-regular{
-  font-family: Montserrat-Regular
+.font-regular {
+  font-family: Montserrat-Regular;
 }
