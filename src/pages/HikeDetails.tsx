@@ -1,7 +1,6 @@
 import { Navigate, useParams } from "react-router-dom";
 import { hikes } from "../hikestemp";
 import { useEffect, useState } from "react";
-import HikePhotoList, { HikePhoto } from "../components/hikes/HikePhotosList";
 
 interface HikeDetails {
   name: string;
@@ -13,9 +12,14 @@ interface HikeDetails {
   duration: number;
 }
 
+interface HikePhoto {
+  id: number;
+  url: string;
+}
+
 function HikeDetails() {
   const { name } = useParams();
-  const [photos, setPhotos] = useState<Array<HikePhoto>>([]);
+  const [photos, setPhotos] = useState<HikePhoto[]>([]);
   const [details, setDetails] = useState<HikeDetails>({
     name: "string",
     description: "string",
@@ -40,9 +44,6 @@ function HikeDetails() {
       .catch((error) => console.log(error));
   }, []);
 
-  // setDetails();
-  console.log(details);
-
   if (!hike) {
     return <Navigate to="/error" />;
   }
@@ -52,7 +53,19 @@ function HikeDetails() {
       <div>
         <h1>{details.name}</h1>
       </div>
-      <HikePhotoList photos={photos} />
+      <div className="relative bg-slate-200 ">
+        <div className="photos-list-label inline-block bg-blue-600 text-white font-bold px-3 py1">
+          PHOTO GALLERY
+        </div>
+        {!photos && <p>Loading...</p>}
+        <div className="max-w-screen-lg py-6 px-8 relative m-auto hike-photos-list">
+          {photos.map((photo) => (
+            <div key={photo.id}>
+              <img src={photo.url}></img>
+            </div>
+          ))}
+        </div>
+      </div>
     </>
   );
 }
