@@ -4,6 +4,7 @@ import About from "./pages/About.tsx";
 import Hikes from "./pages/Hikes.tsx";
 import ErrorPage from "./layout/ErrorPage.tsx";
 import HikeDetails from "./pages/HikeDetails.tsx";
+import CreateEditHike from "./pages/CreateEditHike.tsx";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/hikes/:name",
     element: <HikeDetails />,
+  },
+  {
+    path: "/CreateEditHike/:id?",
+    element: <CreateEditHike />,
   },
   {
     path: "/about",
