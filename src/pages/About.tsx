@@ -1,10 +1,11 @@
-import Header from "../layout/Header";
+import Layout from "../layout/Layout";
 
 function About() {
   return (
     <>
-      <Header />
-      <h1>About fefewgw</h1>;
+      <Layout>
+        <h1>About fefewgw</h1>;
+      </Layout>
     </>
   );
 }
