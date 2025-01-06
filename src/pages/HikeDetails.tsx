@@ -57,10 +57,19 @@ function HikeDetails() {
       {/* Hike descriptions */}
       <div className="">
         <h1>{details.name}</h1>
-        <div>
-          <div>{hike.elevation}m</div>
-          <div>{hike.difficulty}/10</div>
-          <div>{hike.duration} h</div>
+        <div className="flex gap-9 my-10">
+          <div className="flex flex-col gap-1">
+            <div className="text-3xl font-bold">{hike.elevation}m</div>
+            <div className="text-sm text-neutral-500">ELEVATION</div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="text-3xl font-bold">{hike.difficulty}/10</div>
+            <div className="text-sm text-neutral-500">DIFFICULTY</div>
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="text-3xl font-bold">{hike.duration}h</div>
+            <div className="text-sm text-neutral-500">DURATION</div>
+          </div>
         </div>
       </div>
       <div className="max-w-screen-lg mx-auto mb-14 px-2 flex flex-col gap-4">
