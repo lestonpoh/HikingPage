@@ -4,7 +4,7 @@ interface Props {
   onClick: () => void;
 }
 
-const Button = ({ children, onClick, color }: Props) => {
+const Button = ({ children, onClick }: Props) => {
   return (
     <button
       className={
