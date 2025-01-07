@@ -22,7 +22,7 @@ function HikeDetails() {
   const { name } = useParams();
   const [photos, setPhotos] = useState<HikePhoto[]>([]);
   const [details, setDetails] = useState<HikeDetails>({
-    name: "string",
+    name: "Mt. Fuji",
     description:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. In, fugiat. Sequi, doloribus temporibus tenetur id minus impedit error consequatur ipsam quisquam illum, reprehenderit totam ea saepe suscipit culpa odit accusamus.",
     location:
@@ -55,9 +55,10 @@ function HikeDetails() {
   return (
     <Layout>
       {/* Hike descriptions */}
-      <div className="">
-        <h1>{details.name}</h1>
-        <div className="flex gap-9 my-10">
+      <div className="max-w-screen-lg mx-auto mt-12">
+        <h1 className="max-w-screen-lg font-bold text-5xl">{details.name}</h1>
+
+        <div className=" bg-slate-200 rounded-lg py-2 px-5 my-10 mx-auto flex gap-11">
           <div className="flex flex-col gap-1">
             <div className="text-3xl font-bold">{hike.elevation}m</div>
             <div className="text-sm text-neutral-500">ELEVATION</div>
@@ -71,17 +72,18 @@ function HikeDetails() {
             <div className="text-sm text-neutral-500">DURATION</div>
           </div>
         </div>
-      </div>
-      <div className="max-w-screen-lg mx-auto mb-14 px-2 flex flex-col gap-4">
-        <div className="grid grid-cols-[auto_1fr] gap-6">
-          <h1 className="font-bold">DESCRIPTION</h1>
-          <p>{details.description}</p>
 
-          <h1 className="font-bold">LOCATION</h1>
-          <p>{details.location}</p>
+        <div className=" mx-auto mb-14 px-5 flex flex-col gap-4">
+          <div className="grid grid-cols-[auto_1fr] gap-6">
+            <h1 className="font-bold">DESCRIPTION</h1>
+            <p>{details.description}</p>
 
-          <h1 className="font-bold">ACCESS</h1>
-          <p>{details.access}</p>
+            <h1 className="font-bold">LOCATION</h1>
+            <p>{details.location}</p>
+
+            <h1 className="font-bold">ACCESS</h1>
+            <p>{details.access}</p>
+          </div>
         </div>
       </div>
 

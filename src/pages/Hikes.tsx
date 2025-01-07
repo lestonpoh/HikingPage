@@ -2,6 +2,7 @@ import Layout from "../layout/Layout.tsx";
 import "./Hikes.css";
 import { hikes } from "../hikestemp";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/Button.tsx";
 
 function Hikes() {
   let navigate = useNavigate();
@@ -9,9 +10,17 @@ function Hikes() {
     navigate("/hikes/" + name);
   };
 
+  const addHikeOnClick = () => {
+    navigate("/CreateEditHike");
+  };
+
   return (
     <div>
       <Layout>
+        <div className="mt-4 mx-5 flex justify-end">
+          <Button onClick={addHikeOnClick}>Add Hike</Button>
+        </div>
+
         {!hikes && <p>Loading...</p>}
         {hikes.length === 0 && <p>No hikes found</p>}
         <div className="hikes-list max-w-screen-lg">
