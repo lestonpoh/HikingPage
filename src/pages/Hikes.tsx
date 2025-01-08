@@ -2,8 +2,6 @@ import Layout from "../layout/Layout.tsx";
 import "./Hikes.css";
 import { hikes } from "../hikestemp";
 import { useNavigate } from "react-router-dom";
-import Button from "../components/Button.tsx";
-
 function Hikes() {
   let navigate = useNavigate();
   const hikeOnClick = (name: string) => {
@@ -18,7 +16,9 @@ function Hikes() {
     <div>
       <Layout>
         <div className="mt-4 mx-5 flex justify-end">
-          <Button onClick={addHikeOnClick}>Add Hike</Button>
+          <button className={"button"} onClick={addHikeOnClick}>
+            Add Hike
+          </button>
         </div>
 
         {!hikes && <p>Loading...</p>}

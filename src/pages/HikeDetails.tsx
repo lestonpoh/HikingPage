@@ -55,7 +55,7 @@ function HikeDetails() {
   return (
     <Layout>
       {/* Hike descriptions */}
-      <div className="max-w-screen-lg mx-auto mt-12">
+      <div className="max-w-screen-lg mx-auto mt-12 px-2">
         <h1 className="max-w-screen-lg font-bold text-5xl">{details.name}</h1>
 
         <div className=" bg-slate-200 rounded-lg py-2 px-5 my-10 mx-auto flex gap-11">
