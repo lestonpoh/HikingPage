@@ -8,6 +8,14 @@
   }
 
   .input {
-    @apply border border-gray-300 text-gray-900 text-sm rounded-lg hover:border-gray-400 block w-full p-2.5;
+    @apply border border-gray-300 text-gray-900  placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 focus:border-black outline-none block w-full p-2.5;
+  }
+
+  .dropdown {
+    @apply cursor-pointer border border-gray-300 text-gray-900  placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 outline-none block w-full p-2.5;
+  }
+
+  .dropdown.dropdown-active {
+    @apply border-black;
   }
 }
