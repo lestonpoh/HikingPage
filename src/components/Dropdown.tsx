@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 
 interface Props {
   initialValue?: string;
@@ -11,6 +11,25 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
   const [selectedValue, setSelectedValue] = useState(initialValue);
   const [filter, setFilter] = useState("");
   const [showOptions, setShowOptions] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      console.log;
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        console.log("hello");
+        setShowOptions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleFilterOnChange = (event: ChangeEvent<HTMLInputElement>) => {
     const filterText = event.target.value;
@@ -22,14 +41,14 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
     setFilteredOptions(filtered);
   };
 
-  const handleSelect = (value: string, event: MouseEvent<HTMLLIElement>) => {
+  const handleSelect = (value: string, event: any) => {
     event.stopPropagation();
     setSelectedValue(value);
     onSelected(value);
   };
 
   return (
-    <div className="relative">
+    <div ref={dropdownRef} className="relative">
       <div
         className={`dropdown ${
           selectedValue ? "text-gray-900" : "text-gray-400"
@@ -37,20 +56,33 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
         }`}
         onClick={() => setShowOptions(!showOptions)}
       >
-        {selectedValue ? selectedValue : "Select"}
+        <div>{selectedValue ? selectedValue : "Select"}</div>
+        <div
+          className="mr-1"
+          onClick={(event) => {
+            handleSelect("", event);
+          }}
+        >
+          <img
+            className="h-3 hover:scale-105"
+            src="src/assets/icons/Cross_Icon.svg"
+          />
+        </div>
       </div>
 
       {showOptions && (
-        <div className="absolute left-0 right-0 -bottom-2 translate-y-full z-10 bg-white border border-gray-200 rounded-lg">
-          <input
-            className="w-full p-2"
-            type="text"
-            value={filter}
-            onChange={handleFilterOnChange}
-            placeholder="Search..."
-          />
+        <div className="absolute left-0 right-0 -bottom-2 translate-y-full z-10 bg-white border border-gray-200 rounded-lg overflow-hidden">
+          <div className="border border-b-gray-300">
+            <input
+              className="w-full p-2 "
+              type="text"
+              value={filter}
+              onChange={handleFilterOnChange}
+              placeholder="Search..."
+            />
+          </div>
 
-          <ul>
+          <ul className="max-h-96 overflow-y-auto">
             {filteredOptions.map((option, index) => (
               <li
                 key={index}

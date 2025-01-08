@@ -3,6 +3,7 @@ import Layout from "../layout/Layout";
 import SectionItem from "../components/SectionItem";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import Dropdown from "../components/Dropdown";
+import { countriesList } from "../hikestemp";
 
 const CreateEditHike = () => {
   const { id } = useParams();
@@ -99,7 +100,7 @@ const CreateEditHike = () => {
               label={<label htmlFor="">Location</label>}
               body={
                 <Dropdown
-                  options={["singapore", "malaysi", "china", "india"]}
+                  options={countriesList}
                   onSelected={locationOnSelect}
                 />
               }
