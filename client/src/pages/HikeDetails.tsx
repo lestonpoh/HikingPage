@@ -1,5 +1,4 @@
 import { Navigate, useParams } from "react-router-dom";
-import { hikes } from "../hikestemp";
 import { useEffect, useState } from "react";
 import Layout from "../layout/Layout";
 
@@ -34,7 +33,7 @@ function HikeDetails() {
     duration: 1,
   });
 
-  let hike = hikes.find((hike) => hike.name === name);
+  // let hike = hikes.find((hike) => hike.name === name);
   useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/photos", { mode: "cors" })
       .then((response) => response.json())
@@ -48,9 +47,9 @@ function HikeDetails() {
       .catch((error) => console.log(error));
   }, []);
 
-  if (!hike) {
-    return <Navigate to="/error" />;
-  }
+  // if (!hike) {
+  //   return <Navigate to="/error" />;
+  // }
 
   return (
     <Layout>
@@ -60,15 +59,15 @@ function HikeDetails() {
 
         <div className=" bg-slate-200 rounded-lg py-2 px-5 my-10 mx-auto flex gap-11">
           <div className="flex flex-col gap-1">
-            <div className="text-3xl font-bold">{hike.elevation}m</div>
+            <div className="text-3xl font-bold">{details.elevation}m</div>
             <div className="text-sm text-neutral-500">ELEVATION</div>
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-3xl font-bold">{hike.difficulty}/10</div>
+            <div className="text-3xl font-bold">{details.difficulty}/10</div>
             <div className="text-sm text-neutral-500">DIFFICULTY</div>
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-3xl font-bold">{hike.duration}h</div>
+            <div className="text-3xl font-bold">{details.duration}h</div>
             <div className="text-sm text-neutral-500">DURATION</div>
           </div>
         </div>

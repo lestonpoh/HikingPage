@@ -1,8 +1,30 @@
 import Layout from "../layout/Layout.tsx";
 import "./Hikes.css";
-import { hikes } from "../hikestemp";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+interface Hike {
+  id: number;
+  name: string;
+  elevation: number;
+  difficulty: number;
+  duration: number;
+}
+
 function Hikes() {
+  const [hikes, setHikes] = useState<Hike[]>([]);
+
+  useEffect(() => {
+    fetch("/api/hikes")
+      .then((response) => response.json())
+      .then((data) => {
+        setHikes(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching hikes:", error); // Error handling
+      });
+  }, []);
+
   let navigate = useNavigate();
   const hikeOnClick = (name: string) => {
     navigate("/hikes/" + name);
