@@ -3,8 +3,7 @@ import Layout from "../layout/Layout";
 import SectionItem from "../components/SectionItem";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import Dropdown from "../components/Dropdown";
-import { countriesList } from "../hikestemp";
-
+import { countriesList } from "../data/countries";
 const CreateEditHike = () => {
   const { id } = useParams();
   const [formValues, setFormValues] = useState({
@@ -30,8 +29,21 @@ const CreateEditHike = () => {
       location: location,
     }));
   };
+
+  const checkAllFieldsFilled = () => {
+    if (
+      formValues.name === "" ||
+      formValues.elevation === "" ||
+      formValues.difficulty === "" ||
+      formValues.duration === "" ||
+      formValues.location === ""
+    ) {
+      alert("error");
+    }
+  };
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    checkAllFieldsFilled();
   };
 
   return (

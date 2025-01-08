@@ -57,17 +57,15 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
         onClick={() => setShowOptions(!showOptions)}
       >
         <div>{selectedValue ? selectedValue : "Select"}</div>
-        <div
-          className="mr-1"
-          onClick={(event) => {
-            handleSelect("", event);
-          }}
-        >
+        {selectedValue && (
           <img
-            className="h-3 hover:scale-105"
+            className="mr-1 h-3 hover:scale-105"
             src="src/assets/icons/Cross_Icon.svg"
+            onClick={(event) => {
+              handleSelect("", event);
+            }}
           />
-        </div>
+        )}
       </div>
 
       {showOptions && (

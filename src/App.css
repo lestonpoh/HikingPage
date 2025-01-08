@@ -12,6 +12,21 @@ html {
   font-family: Montserrat-Regular;
 }
 
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 20px;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
 .font-bold {
   font-family: Montserrat-Bold;
 }
@@ -20,6 +35,7 @@ html {
   font-family: Montserrat-Regular;
 }
 
+/* input  */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
