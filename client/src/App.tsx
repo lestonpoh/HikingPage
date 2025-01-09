@@ -5,12 +5,17 @@ import Hikes from "./pages/Hikes.tsx";
 import ErrorPage from "./layout/ErrorPage.tsx";
 import HikeDetails from "./pages/HikeDetails.tsx";
 import CreateEditHike from "./pages/CreateEditHike.tsx";
+import Login from "./pages/login/Login.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Hikes />,
     errorElement: <ErrorPage />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
   {
     path: "/error",
