@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useContext } from "react";
 import Header from "./Header";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 
 function Layout({ children }: Props) {
   return (
-    <div className="">
+    <div>
       <Header />
       <div className="layout-content">{children}</div>
     </div>

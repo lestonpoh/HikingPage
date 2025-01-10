@@ -8,7 +8,10 @@
   }
 
   .input {
-    @apply border border-gray-300 text-gray-900  placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 focus:border-black outline-none block w-full p-2.5;
+    @apply border border-gray-300 text-gray-900 placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 focus:border-black outline-none block w-full px-2.5 py-2;
+    &.dark {
+      @apply text-white;
+    }
   }
 
   .dropdown {
@@ -18,4 +21,53 @@
   .dropdown.dropdown-active {
     @apply border-black;
   }
+}
+
+@font-face {
+  font-family: "Montserrat-Regular";
+  src: url("./assets/fonts/Montserrat-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Montserrat-Bold";
+  src: url("./assets/fonts/Montserrat-Bold.ttf");
+}
+
+html {
+  font-family: Montserrat-Regular;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  border-radius: 20px;
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+.font-bold {
+  font-family: Montserrat-Bold;
+}
+
+.font-regular {
+  font-family: Montserrat-Regular;
+}
+
+/* input  */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input {
+  outline: none;
+  width: 100%;
 }

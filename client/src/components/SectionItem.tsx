@@ -8,7 +8,7 @@ interface Props {
 const SectionItem = ({ label, body }: Props) => {
   return (
     <div className="flex flex-col gap-1">
-      <div className="font-bold">{label}</div>
+      <div className="font-bold text-xs">{label}</div>
       <div>{body}</div>
     </div>
   );
