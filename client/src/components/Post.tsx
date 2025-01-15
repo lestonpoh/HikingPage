@@ -7,12 +7,15 @@ import {
 } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import PostDetails from "../interface/PostDetails";
+import { useState } from "react";
+import Comments from "./comments";
 
 interface Props {
   post: PostDetails;
 }
 
 const Post = ({ post }: Props) => {
+  const [commentOpen, setCommentOpen] = useState(false);
   // temp
   const liked = false;
 
@@ -56,8 +59,11 @@ const Post = ({ post }: Props) => {
           )}
           12 Likes
         </div>
-        <div className="flex items-center gap-1 text-xs">
-          <TextsmsOutlined className="cursor-pointer" />
+        <div
+          onClick={() => setCommentOpen(!commentOpen)}
+          className="flex items-center gap-1 text-xs cursor-pointer"
+        >
+          <TextsmsOutlined />
           10 Comments
         </div>
         <div className="flex items-center gap-1 text-xs">
@@ -65,6 +71,7 @@ const Post = ({ post }: Props) => {
           Share
         </div>
       </div>
+      {commentOpen && <Comments />}
     </div>
   );
 };
