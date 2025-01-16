@@ -13,6 +13,7 @@ interface Props {
 interface User {
   id: number;
   name: string;
+  profilePic: string;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -28,7 +29,11 @@ export const AuthContextProvider = ({ children }: Props) => {
   });
 
   const login = () => {
-    setCurrentUser({ id: 1, name: "leston" });
+    setCurrentUser({
+      id: 1,
+      name: "leston",
+      profilePic: "https://picsum.photos/200",
+    });
   };
 
   const logout = () => {

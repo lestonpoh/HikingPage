@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
+
 interface CommentDetails {
   profilePicture: string;
   name: string;
@@ -5,6 +8,7 @@ interface CommentDetails {
 }
 
 const Comments = () => {
+  const { currentUser } = useContext(AuthContext);
   const comments: CommentDetails[] = [
     {
       profilePicture: "https://picsum.photos/200",
@@ -33,10 +37,10 @@ const Comments = () => {
   ];
   return (
     <div>
-      <div className="flex gap-4 items-center pb-5 mb-5 border-b border-b-slate-200">
+      <div className="flex gap-4 items-center pb-5 mb-5 ">
         <img
           className="w-10 h-10 rounded-full object-cover"
-          src="https://picsum.photos/200"
+          src={currentUser?.profilePic}
           alt=""
         />
         <input className="input" type="text" placeholder="Write a comment" />

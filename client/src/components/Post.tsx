@@ -17,6 +17,7 @@ interface Props {
 const Post = ({ post }: Props) => {
   const [commentOpen, setCommentOpen] = useState(false);
   // temp
+
   const liked = false;
 
   return (
@@ -42,8 +43,13 @@ const Post = ({ post }: Props) => {
           <MoreHoriz />
         </div>
       </div>
+      <div className="flex gap-1 text-xs px-3 py-2 rounded bg-gray-200">
+        <div className="flex-1 font-bold">Elevation: {post.elevation}m</div>
+        <div className="flex-1 font-bold">Difficulty: {post.difficulty}/10</div>
+        <div className="flex-1 font-bold">Duration: {post.duration} h</div>
+      </div>
       <div>
-        <div>{post.description}</div>
+        <div className="hidden md:block">{post.description}</div>
         <img
           src={post.profilePic}
           alt="Post Image"

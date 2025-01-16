@@ -10,6 +10,9 @@ const Posts = () => {
       description:
         "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
       profilePic: "https://picsum.photos/200",
+      elevation: 1000,
+      difficulty: 1,
+      duration: 1,
     },
     {
       id: 2,
@@ -18,6 +21,9 @@ const Posts = () => {
       description:
         "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
       profilePic: "https://picsum.photos/200",
+      elevation: 1000,
+      difficulty: 1,
+      duration: 1,
     },
     {
       id: 3,
@@ -26,6 +32,9 @@ const Posts = () => {
       description:
         "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
       profilePic: "https://picsum.photos/200",
+      elevation: 1000,
+      difficulty: 1,
+      duration: 1,
     },
     {
       id: 4,
@@ -34,6 +43,9 @@ const Posts = () => {
       description:
         "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
       profilePic: "https://picsum.photos/200",
+      elevation: 1000,
+      difficulty: 1,
+      duration: 1,
     },
   ];
 
