@@ -4,6 +4,8 @@ import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import commentRoutes from "./routes/comments.js";
 import likeRoutes from "./routes/likes.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = Express();
 
@@ -39,8 +41,8 @@ app.get("/api/hikes", (req, res) => {
   ]);
 });
 
-const PORT = 5000;
+const port = process.env.PORT;
 
-app.listen(PORT, () => {
-  console.log(`My first Express app - listening on port ${PORT}!`);
+app.listen(port, () => {
+  console.log(`My first Express app - listening on port ${port}!`);
 });
