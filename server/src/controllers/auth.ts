@@ -10,11 +10,11 @@ const validateRegister = [
 ];
 
 export const register = [
-  validateRegister,
+  ...validateRegister,
   (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return void res.status(400).json({ errors: errors.array() });
     }
 
     // check if username exists
