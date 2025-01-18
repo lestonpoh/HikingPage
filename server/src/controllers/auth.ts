@@ -3,7 +3,7 @@ import { db } from "../connect";
 import bcrypt from "bcryptjs";
 
 export const register = (req: Request, res: Response) => {
-  // check if username exist
+  // check if username exists
 
   const q = "SELECT * FROM user WHERE username = ?";
   db.query(q, [req.body.username], (err, data) => {
