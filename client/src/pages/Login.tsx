@@ -22,6 +22,12 @@ const Login = () => {
             body={<input className="input" type="text" placeholder="Email" />}
           />
           <SectionItem
+            label="Username"
+            body={
+              <input className="input" type="text" placeholder="Username" />
+            }
+          />
+          <SectionItem
             label="Password"
             body={
               <input className="input" type="password" placeholder="Password" />
