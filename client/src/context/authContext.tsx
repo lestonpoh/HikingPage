@@ -1,8 +1,9 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
+import axiosInstance from "../services/axiosInstance";
 
 interface AuthContextType {
   currentUser: User | null;
-  login: () => void;
+  login: (inputs: LoginInputs) => Promise<void>;
   logout: () => void;
 }
 
@@ -16,9 +17,14 @@ interface User {
   profilePic: string;
 }
 
+interface LoginInputs {
+  email: string;
+  password: string;
+}
+
 export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
-  login: () => {},
+  login: () => Promise.resolve(),
   logout: () => {},
 });
 
@@ -28,12 +34,15 @@ export const AuthContextProvider = ({ children }: Props) => {
     return savedCurrentUser ? JSON.parse(savedCurrentUser) : null;
   });
 
-  const login = () => {
-    setCurrentUser({
-      id: 1,
-      name: "leston",
-      profilePic: "https://picsum.photos/200",
-    });
+  const login = (inputs: LoginInputs) => {
+    return axiosInstance
+      .post("/auth/login", inputs, { withCredentials: true })
+      .then((response) => {
+        setCurrentUser(response.data);
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 
   const logout = () => {

@@ -1,16 +1,33 @@
 import { Link, useNavigate } from "react-router-dom";
 import SectionItem from "../components/SectionItem";
 import { AuthContext } from "../context/authContext";
-import { useContext } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 
 const Login = () => {
+  const [inputs, setInputs] = useState({
+    email: "",
+    password: "",
+  });
+
+  // const [error, SetError] = useState(false);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleLogin = (e: any) => {
     e.preventDefault();
-    login();
-    navigate("/");
+    login(inputs)
+      .then(() => {
+        console.log("success");
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log("hello");
+        console.log(err);
+      });
   };
   return (
     <div className="h-screen bg-slate-200 flex items-center justify-center">
@@ -19,18 +36,27 @@ const Login = () => {
         <form className="flex flex-col gap-3">
           <SectionItem
             label="Email"
-            body={<input className="input" type="text" placeholder="Email" />}
-          />
-          <SectionItem
-            label="Username"
             body={
-              <input className="input" type="text" placeholder="Username" />
+              <input
+                className="input"
+                type="text"
+                placeholder="Email"
+                name="email"
+                onChange={handleChange}
+              />
             }
           />
+
           <SectionItem
             label="Password"
             body={
-              <input className="input" type="password" placeholder="Password" />
+              <input
+                className="input"
+                type="password"
+                placeholder="Password"
+                name="password"
+                onChange={handleChange}
+              />
             }
           />
           <button onClick={handleLogin} className="button w-1/2 mt-1">

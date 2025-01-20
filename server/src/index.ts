@@ -1,4 +1,6 @@
 import express, { Express } from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import postRoutes from "./routes/posts";
@@ -8,7 +10,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app: Express = express();
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+  })
+);
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
