@@ -31,5 +31,5 @@ app.use("/api/likes", likeRoutes);
 const port = process.env.PORT;
 
 app.listen(port, () => {
-  console.log(`My first Express app - listening on port ${port}!`);
+  console.log(`Server running - listening on port ${port}!`);
 });

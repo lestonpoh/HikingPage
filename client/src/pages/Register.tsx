@@ -48,18 +48,6 @@ const Register = () => {
       .catch((err) => {
         console.log(err);
       });
-
-    // try {
-    //   await axiosInstance.post("/auth/register", registerInputs);
-    // } catch (err: any) {
-    //   if (err.response.status === 400) {
-    //     console.log("400");
-    //   }
-    //   if (err.response.data === "User already exist") {
-    //   } else {
-    //     console.log(err.response.data);
-    //   }
-    // }
   };
 
   return (

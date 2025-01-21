@@ -30,9 +30,9 @@ export const register = [
       // hashPassword
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(req.body.password, salt);
-      const q = "INSERT INTO users (`username`,`email`,`password`) VALUE (?)";
+      const q = "INSERT INTO user (`username`,`email`,`password`) VALUES (?)";
       const reqValues = [req.body.username, req.body.email, hashedPassword];
-      db.query(q, reqValues, (err, data) => {
+      db.query(q, [reqValues], (err, data) => {
         if (err) return res.status(500).json(err);
         return res.status(200).json("User has been created.");
       });
