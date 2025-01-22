@@ -1,9 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../layout/Layout";
 import SectionItem from "../components/SectionItem";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import Dropdown from "../components/Dropdown";
 import { countriesList } from "../data/countries";
+import axiosInstance from "../services/axiosInstance";
 const AddPost = () => {
   const { id } = useParams();
   const [inputs, setInputs] = useState({
@@ -13,6 +14,8 @@ const AddPost = () => {
     difficulty: "",
     duration: "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -25,7 +28,8 @@ const AddPost = () => {
     }));
   };
 
-  const checkAllFieldsFilled = () => {
+  const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (
       inputs.description === "" ||
       inputs.elevation === "" ||
@@ -34,11 +38,16 @@ const AddPost = () => {
       inputs.location === ""
     ) {
       alert("error");
+      return;
     }
-  };
-  const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    checkAllFieldsFilled();
+    axiosInstance
+      .post("/posts", inputs)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
