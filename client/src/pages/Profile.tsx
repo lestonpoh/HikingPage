@@ -21,7 +21,7 @@ const Profile = () => {
             alt="Profile picture"
           />
           <div className="flex flex-col gap-2">
-            <div className="font-bold text-2xl">{currentUser?.name}</div>
+            <div className="font-bold text-2xl">{currentUser?.username}</div>
             <div className="flex gap-5">
               <div className="flex flex-col text-center md:flex-row md:gap-1">
                 <div className="font-bold">10</div>

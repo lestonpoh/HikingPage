@@ -1,9 +1,15 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import SectionItem from "../components/SectionItem";
 import { AuthContext } from "../context/authContext";
 import { ChangeEvent, useContext, useState } from "react";
 
 const Login = () => {
+  // navigate to home if loggedin
+  const { currentUser } = useContext(AuthContext);
+  if (currentUser) {
+    return <Navigate to="/" />;
+  }
+
   const [inputs, setInputs] = useState({
     email: "",
     password: "",
@@ -14,18 +20,20 @@ const Login = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleLogin = (e: any) => {
     e.preventDefault();
+
+    if (inputs.email === "" || inputs.password === "") {
+      // add ui
+      console.log("not all fields filled");
+      return;
+    }
+
     login(inputs)
-      .then(() => {
-        console.log("success");
-        navigate("/");
-      })
+      .then(() => {})
       .catch((err) => {
-        console.log("hello");
         console.log(err);
       });
   };

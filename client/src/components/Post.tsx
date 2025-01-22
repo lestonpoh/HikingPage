@@ -8,7 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import PostDetails from "../interface/PostDetails";
 import { useState } from "react";
-import Comments from "./comments";
+import Comments from "./Comments";
 
 interface Props {
   post: PostDetails;
@@ -36,7 +36,7 @@ const Post = ({ post }: Props) => {
             to={`/profile/${post.userId}`}
             className="font-bold text-xl cursor-pointer"
           >
-            {post.name}
+            {post.username}
           </Link>
         </div>
         <div>

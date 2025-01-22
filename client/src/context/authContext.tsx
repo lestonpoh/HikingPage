@@ -13,7 +13,8 @@ interface Props {
 
 interface User {
   id: number;
-  name: string;
+  username: string;
+  email: string;
   profilePic: string;
 }
 
@@ -36,9 +37,10 @@ export const AuthContextProvider = ({ children }: Props) => {
 
   const login = (inputs: LoginInputs) => {
     return axiosInstance
-      .post("/auth/login", inputs, { withCredentials: true })
-      .then((response) => {
-        setCurrentUser(response.data);
+      .post("/auth/login", inputs)
+      .then((res) => {
+        const { id, username, email, profilePic } = res.data;
+        setCurrentUser({ id, username, email, profilePic });
       })
       .catch((err) => {
         throw err;
@@ -46,7 +48,14 @@ export const AuthContextProvider = ({ children }: Props) => {
   };
 
   const logout = () => {
-    setCurrentUser(null);
+    return axiosInstance
+      .post("/auth/logout")
+      .then(() => {
+        setCurrentUser(null);
+      })
+      .catch((err) => {
+        throw err;
+      });
   };
 
   useEffect(() => {

@@ -4,7 +4,6 @@ import About from "./pages/About.tsx";
 import Hikes from "./pages/Hikes.tsx";
 import ErrorPage from "./layout/ErrorPage.tsx";
 import HikeDetails from "./pages/HikeDetails.tsx";
-import CreateEditHike from "./pages/CreateEditHike.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
 import LayoutNew from "./layout/LayoutNew.tsx";
@@ -13,6 +12,10 @@ import Profile from "./pages/Profile.tsx";
 import ProtectedRoute from "./layout/ProtectedRoute.tsx";
 import { DarkModeContextProvider } from "./context/darkModeContext.tsx";
 import { AuthContextProvider } from "./context/authContext.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import AddPost from "./pages/AddPost.tsx";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -60,8 +63,8 @@ const router = createBrowserRouter([
     element: <HikeDetails />,
   },
   {
-    path: "/CreateEditHike/:id?",
-    element: <CreateEditHike />,
+    path: "/AddPost/:id?",
+    element: <AddPost />,
   },
   {
     path: "/about",
@@ -71,11 +74,13 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <DarkModeContextProvider>
-      <AuthContextProvider>
-        <RouterProvider router={router} />
-      </AuthContextProvider>
-    </DarkModeContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <DarkModeContextProvider>
+        <AuthContextProvider>
+          <RouterProvider router={router} />
+        </AuthContextProvider>
+      </DarkModeContextProvider>
+    </QueryClientProvider>
   );
 }
 

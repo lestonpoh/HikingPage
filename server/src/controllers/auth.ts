@@ -23,8 +23,8 @@ export const register = [
     }
 
     // check if username exists
-    const q = "SELECT * FROM user WHERE username = ?";
-    db.query(q, [req.body.username], (err, data) => {
+    const q = "SELECT * FROM user WHERE username = ? or email = ?";
+    db.query(q, [req.body.username,req.body.email], (err, data) => {
       if (err) return res.status(500).json(err);
       if (data.length) return res.status(409).json("User already exist!");
       // hashPassword

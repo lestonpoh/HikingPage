@@ -4,27 +4,22 @@ import SectionItem from "../components/SectionItem";
 import { ChangeEvent, MouseEvent, useState } from "react";
 import Dropdown from "../components/Dropdown";
 import { countriesList } from "../data/countries";
-const CreateEditHike = () => {
+const AddPost = () => {
   const { id } = useParams();
-  const [formValues, setFormValues] = useState({
-    name: "",
+  const [inputs, setInputs] = useState({
+    description: "",
+    location: "",
     elevation: "",
     difficulty: "",
     duration: "",
-    location: "",
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
+    setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const locationOnSelect = (location: string) => {
-    setFormValues((prevValues) => ({
+    setInputs((prevValues) => ({
       ...prevValues,
       location: location,
     }));
@@ -32,11 +27,11 @@ const CreateEditHike = () => {
 
   const checkAllFieldsFilled = () => {
     if (
-      formValues.name === "" ||
-      formValues.elevation === "" ||
-      formValues.difficulty === "" ||
-      formValues.duration === "" ||
-      formValues.location === ""
+      inputs.description === "" ||
+      inputs.elevation === "" ||
+      inputs.difficulty === "" ||
+      inputs.duration === "" ||
+      inputs.location === ""
     ) {
       alert("error");
     }
@@ -52,15 +47,14 @@ const CreateEditHike = () => {
         <form>
           <div className="grid gap-5 md:grid-cols-2">
             <SectionItem
-              label={<label htmlFor="name">Name</label>}
+              label={<label htmlFor="description">description</label>}
               body={
                 <input
-                  id="name"
+                  id="description"
                   className="input"
                   type="text"
-                  placeholder="Enter name"
-                  name="name"
-                  value={formValues.name}
+                  placeholder="Enter description"
+                  name="description"
                   onChange={handleChange}
                 />
               }
@@ -74,7 +68,6 @@ const CreateEditHike = () => {
                   type="number"
                   placeholder="Enter elevation in meters"
                   name="elevation"
-                  value={formValues.elevation}
                   onChange={handleChange}
                 />
               }
@@ -88,7 +81,6 @@ const CreateEditHike = () => {
                   type="number"
                   placeholder="Enter difficulty (out of 5)"
                   name="difficulty"
-                  value={formValues.difficulty}
                   onChange={handleChange}
                 />
               }
@@ -102,7 +94,6 @@ const CreateEditHike = () => {
                   type="number"
                   placeholder="Enter duration"
                   name="duration"
-                  value={formValues.duration}
                   onChange={handleChange}
                 />
               }
@@ -118,9 +109,7 @@ const CreateEditHike = () => {
               }
             />
           </div>
-
           <div className="flex justify-end mt-6">
-            {formValues.location}
             <button className="button" onClick={submitOnClick}>
               Submit
             </button>
@@ -131,4 +120,4 @@ const CreateEditHike = () => {
   );
 };
 
-export default CreateEditHike;
+export default AddPost;

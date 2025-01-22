@@ -1,59 +1,38 @@
+import { useQuery } from "@tanstack/react-query";
 import PostDetails from "../interface/PostDetails";
 import Post from "./Post";
+import axiosInstance from "../services/axiosInstance";
 
 const Posts = () => {
-  const posts: PostDetails[] = [
-    {
-      id: 1,
-      name: "aaadd",
-      userId: 1,
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
-      profilePic: "https://picsum.photos/200",
-      elevation: 1000,
-      difficulty: 1,
-      duration: 1,
-    },
-    {
-      id: 2,
-      name: "aafa",
-      userId: 2,
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
-      profilePic: "https://picsum.photos/200",
-      elevation: 1000,
-      difficulty: 1,
-      duration: 1,
-    },
-    {
-      id: 3,
-      name: "aaagg",
-      userId: 3,
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
-      profilePic: "https://picsum.photos/200",
-      elevation: 1000,
-      difficulty: 1,
-      duration: 1,
-    },
-    {
-      id: 4,
-      name: "aggaa",
-      userId: 4,
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
-      profilePic: "https://picsum.photos/200",
-      elevation: 1000,
-      difficulty: 1,
-      duration: 1,
-    },
-  ];
+  const { isPending, error, data } = useQuery<PostDetails[]>({
+    queryKey: ["posts"],
+    queryFn: () =>
+      axiosInstance
+        .get("/posts")
+        .then((res) => {
+          return res.data.map((item: any) => ({
+            id: item.id,
+            username: item.username,
+            userId: item.userId,
+            profilePic: item.profilePic,
+            description: item.description,
+            elevation: item.elevation,
+            difficulty: item.difficulty,
+            duration: item.duration,
+          }));
+        })
+        .catch((err) => {
+          console.log(err);
+        }),
+  });
+
+  console.log(data);
 
   return (
     <div className="flex flex-col gap-12">
-      {posts.map((post) => (
-        <Post post={post} />
-      ))}
+      {isPending
+        ? " loading"
+        : data?.map((post) => <Post key={post.id} post={post} />)}
     </div>
   );
 };

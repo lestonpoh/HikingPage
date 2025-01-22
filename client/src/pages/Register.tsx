@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SectionItem from "../components/SectionItem";
 import { ChangeEvent, useState } from "react";
 import Input from "../components/Input";
@@ -13,7 +13,7 @@ const Register = () => {
   });
 
   // const [error, SetError] = useState(false);
-
+  const navigate = useNavigate();
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -44,6 +44,7 @@ const Register = () => {
       .post("/auth/register", registerInputs)
       .then((response) => {
         console.log(response);
+        navigate("/login");
       })
       .catch((err) => {
         console.log(err);

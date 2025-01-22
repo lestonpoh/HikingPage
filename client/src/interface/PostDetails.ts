@@ -1,6 +1,6 @@
 export default interface PostDetails {
   id: number;
-  name: string;
+  username: string;
   userId: number;
   profilePic: string;
   description: string;
