@@ -1,6 +1,5 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import About from "./pages/About.tsx";
 import Hikes from "./pages/Hikes.tsx";
 import ErrorPage from "./layout/ErrorPage.tsx";
 import HikeDetails from "./pages/HikeDetails.tsx";
@@ -13,7 +12,7 @@ import ProtectedRoute from "./layout/ProtectedRoute.tsx";
 import { DarkModeContextProvider } from "./context/darkModeContext.tsx";
 import { AuthContextProvider } from "./context/authContext.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AddPost from "./pages/AddPost.tsx";
+import AddEditPost from "./pages/AddEditPost.tsx";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +33,18 @@ const router = createBrowserRouter([
         path: "/profile/:id",
         element: <Profile />,
       },
+      {
+        path: "/addEditPost/:id?",
+        element: <AddEditPost />,
+      },
+      {
+        path: "/hike",
+        element: <Hikes />,
+      },
+      {
+        path: "/hike/:name",
+        element: <HikeDetails />,
+      },
     ],
     errorElement: <ErrorPage />,
   },
@@ -53,22 +64,6 @@ const router = createBrowserRouter([
   {
     path: "/error",
     element: <ErrorPage />,
-  },
-  {
-    path: "/hikes",
-    element: <Hikes />,
-  },
-  {
-    path: "/hikes/:name",
-    element: <HikeDetails />,
-  },
-  {
-    path: "/AddPost/:id?",
-    element: <AddPost />,
-  },
-  {
-    path: "/about",
-    element: <About />,
   },
 ]);
 

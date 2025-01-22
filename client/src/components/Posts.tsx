@@ -31,7 +31,7 @@ const Posts = () => {
   return (
     <div className="flex flex-col gap-12">
       {isPending
-        ? " loading"
+        ? "loading"
         : data?.map((post) => <Post key={post.id} post={post} />)}
     </div>
   );

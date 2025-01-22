@@ -6,6 +6,7 @@ import userRoutes from "./routes/users";
 import postRoutes from "./routes/posts";
 import commentRoutes from "./routes/comments";
 import likeRoutes from "./routes/likes";
+import hikeRoutes from "./routes/hikeRoute";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/likes", likeRoutes);
+app.use("/api/hike", hikeRoutes);
 
 const port = process.env.PORT;
 

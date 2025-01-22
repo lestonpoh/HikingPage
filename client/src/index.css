@@ -8,14 +8,14 @@
   }
 
   .input {
-    @apply border border-gray-300 text-gray-900 placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 focus:border-black outline-none block w-full px-2.5 py-2;
+    @apply h-10 border border-gray-300 text-gray-900 placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 focus:border-black outline-none block w-full px-2.5 py-2;
     &.dark {
       @apply text-white;
     }
   }
 
   .dropdown {
-    @apply cursor-pointer flex items-center justify-between gap-1 border border-gray-300 text-gray-900  placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 outline-none w-full p-2.5;
+    @apply h-10 cursor-pointer bg-white flex items-center justify-between gap-1 border border-gray-300 text-gray-900  placeholder:text-gray-400 text-sm rounded-lg hover:border-gray-400 outline-none w-full p-2.5;
   }
 
   .dropdown.dropdown-active {

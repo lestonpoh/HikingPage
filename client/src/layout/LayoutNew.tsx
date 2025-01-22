@@ -9,10 +9,11 @@ const LayoutNew = () => {
   return (
     <div className={darkMode ? "dark" : ""}>
       <Navbar />
-      <div className="bg-slate-100 dark:bg-slate-500 min-h-full">
-        <div className="max-w-screen-lg mx-auto p-5 md:p-11">
-          <Outlet />
-        </div>
+      <div className="dark:bg-slate-500 min-h-full">
+        <Outlet />
+        {/* <div className="max-w-screen-lg mx-auto p-5 md:p-11">
+          
+        </div> */}
       </div>
     </div>
   );
