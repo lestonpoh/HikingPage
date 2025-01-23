@@ -5,7 +5,7 @@ import ErrorPage from "./layout/ErrorPage.tsx";
 import HikeDetails from "./pages/HikeDetails.tsx";
 import Login from "./pages/Login.tsx";
 import Register from "./pages/Register.tsx";
-import LayoutNew from "./layout/LayoutNew.tsx";
+import Layout from "./layout/Layout.tsx";
 import Home from "./pages/Home.tsx";
 import Profile from "./pages/Profile.tsx";
 import ProtectedRoute from "./layout/ProtectedRoute.tsx";
@@ -13,6 +13,7 @@ import { DarkModeContextProvider } from "./context/darkModeContext.tsx";
 import { AuthContextProvider } from "./context/authContext.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AddEditPost from "./pages/AddEditPost.tsx";
+import AddHike from "./pages/AddHike.tsx";
 
 const queryClient = new QueryClient();
 
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <ProtectedRoute>
-        <LayoutNew />
+        <Layout />
       </ProtectedRoute>
     ),
     children: [
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: "/hike/:name",
         element: <HikeDetails />,
+      },
+      {
+        path: "/hike/addHike",
+        element: <AddHike />,
       },
     ],
     errorElement: <ErrorPage />,

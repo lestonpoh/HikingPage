@@ -13,17 +13,16 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
   const [showOptions, setShowOptions] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setShowOptions(false);
+    }
+  };
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      console.log;
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        console.log("hello");
-        setShowOptions(false);
-      }
-    };
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
@@ -41,8 +40,9 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
     setFilteredOptions(filtered);
   };
 
-  const handleSelect = (value: string, event: any) => {
-    event.stopPropagation();
+  const handleSelect = (value: string, e: any) => {
+    e.stopPropagation();
+    setShowOptions(false);
     setSelectedValue(value);
     onSelected(value);
   };
@@ -60,7 +60,7 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
         {selectedValue && (
           <img
             className="mr-1 h-3 hover:scale-105"
-            src="src/assets/icons/Cross_Icon.svg"
+            src="src/assets/icons/cross.svg"
             onClick={(event) => {
               handleSelect("", event);
             }}

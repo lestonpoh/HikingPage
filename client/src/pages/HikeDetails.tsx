@@ -1,6 +1,7 @@
 import { Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/axiosInstance";
+import Input from "../components/Input";
 
 interface HikeDetails {
   name: string;
@@ -73,7 +74,7 @@ function HikeDetails() {
             </div>
           </div>
 
-          <div className=" mx-auto mb-14 px-5 flex flex-col gap-4">
+          <div className="mb-14 px-5 flex flex-col gap-4">
             <div className="grid grid-cols-[auto_1fr] gap-6">
               <h1 className="font-bold">DESCRIPTION</h1>
               <p>{details.description}</p>
@@ -88,20 +89,42 @@ function HikeDetails() {
         </div>
       )}
 
-      <div></div>
-
       {/* photos gallery */}
       <div className="relative bg-slate-200 ">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-block bg-blue-600 text-white font-bold px-4 py-1 text-xl">
           PHOTO GALLERY
         </div>
         {!photos && <p>Loading...</p>}
-        <div className="max-w-screen-lg py-10 px-8 m-auto flex flex-wrap gap-3">
+        <div className="max-w-screen-lg py-10 px-8 m-auto flex flex-wrap gap-3 max-h-96">
           {photos.map((photo) => (
             <div key={photo.id}>
               <img className="h-40" src={photo.url}></img>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="max-w-screen-lg mx-auto mt-12 px-2">
+        <h1 className="font-bold text-5xl">COMMENTS</h1>
+
+        <div className="mt-8 mb-14 flex flex-col gap-4">
+          <div className="flex gap-2 w-full">
+            <div className="flex-1">
+              <Input type="text" placeholder="Enter comment" />
+            </div>
+
+            <button className="button">Post</button>
+          </div>
+          <div className="grid grid-cols-[auto_1fr] gap-6">
+            <h1 className="font-bold">DESCRIPTION</h1>
+            <p>descripticewfdewfewfewfewon</p>
+
+            <h1 className="font-bold">LOCATION</h1>
+            <p>locatwefewfwefion</p>
+
+            <h1 className="font-bold">ACCESS</h1>
+            <p>accewefwefss</p>
+          </div>
         </div>
       </div>
     </div>

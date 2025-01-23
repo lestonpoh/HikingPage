@@ -26,11 +26,11 @@ const Navbar = () => {
           <DarkModeOutlinedIcon onClick={toggle} className="cursor-pointer" />
         )} */}
       </div>
-      {/* <div className="flex-1 flex justify-center">
+      <div className="flex-1 flex justify-center">
         <div className="max-w-2xl w-full">
-          <SearchInput placeholder="hello" />
+          <Link to="/hike">Hike</Link>
         </div>
-      </div> */}
+      </div>
       <div className="flex items-center gap-2">
         <img
           className="w-8 rounded-full"
