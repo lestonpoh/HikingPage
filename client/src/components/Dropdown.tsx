@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface Props {
   initialValue?: string;
@@ -58,13 +59,14 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
       >
         <div>{selectedValue ? selectedValue : "Select"}</div>
         {selectedValue && (
-          <img
-            className="mr-1 h-3 hover:scale-105"
-            src="src/assets/icons/cross.svg"
+          <div
+            className="mr-1 hover:scale-105"
             onClick={(event) => {
               handleSelect("", event);
             }}
-          />
+          >
+            <CloseIcon />
+          </div>
         )}
       </div>
 

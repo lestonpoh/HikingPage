@@ -4,6 +4,7 @@ import { ChangeEvent, MouseEvent, useState } from "react";
 import Dropdown from "../components/Dropdown";
 import { countriesList } from "../data/countries";
 import axiosInstance from "../services/axiosInstance";
+import FileUpload from "../components/FileUpload";
 
 const AddHike = () => {
   const { id } = useParams();
@@ -14,6 +15,8 @@ const AddHike = () => {
     difficulty: "",
     duration: "",
   });
+
+  const [file, setFile] = useState("");
 
   const navigate = useNavigate();
 
@@ -26,6 +29,10 @@ const AddHike = () => {
       ...prevValues,
       location: location,
     }));
+  };
+
+  const fileOnUpload = (files: File[]) => {
+    if (files.length > 0) setFile(URL.createObjectURL(files[0]));
   };
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -116,9 +123,19 @@ const AddHike = () => {
           />
 
           <SectionItem
-            label={<div>Upload File</div>}
-            body={<input type="file" />}
+            label="Upload Images"
+            body={
+              <FileUpload
+                onFilesSelected={(files) => {
+                  fileOnUpload(files);
+                }}
+              />
+            }
+            className="col-[1/3]"
           />
+          <div>
+            <img src={file} alt="" />
+          </div>
         </div>
         <div className="flex justify-end mt-6">
           <button className="button" onClick={submitOnClick}>
