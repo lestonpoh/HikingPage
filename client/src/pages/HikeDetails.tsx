@@ -2,6 +2,9 @@ import { Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/axiosInstance";
 import Input from "../components/Input";
+import SectionItem from "../components/SectionItem";
+import PostComment from "../components/PostComment";
+import Comments from "../components/Comments";
 
 interface HikeDetails {
   name: string;
@@ -104,29 +107,7 @@ function HikeDetails() {
         </div>
       </div>
 
-      <div className="max-w-screen-lg mx-auto mt-12 px-2">
-        <h1 className="font-bold text-5xl">COMMENTS</h1>
-
-        <div className="mt-8 mb-14 flex flex-col gap-4">
-          <div className="flex gap-2 w-full">
-            <div className="flex-1">
-              <Input type="text" placeholder="Enter comment" />
-            </div>
-
-            <button className="button">Post</button>
-          </div>
-          <div className="grid grid-cols-[auto_1fr] gap-6">
-            <h1 className="font-bold">DESCRIPTION</h1>
-            <p>descripticewfdewfewfewfewon</p>
-
-            <h1 className="font-bold">LOCATION</h1>
-            <p>locatwefewfwefion</p>
-
-            <h1 className="font-bold">ACCESS</h1>
-            <p>accewefwefss</p>
-          </div>
-        </div>
-      </div>
+      <Comments />
     </div>
   );
 }

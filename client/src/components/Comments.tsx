@@ -1,65 +1,88 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/authContext";
+import { useState } from "react";
+import PostComment from "./PostComment";
 
 interface CommentDetails {
-  profilePicture: string;
-  name: string;
+  id: number;
+  username: string;
   description: string;
+  date: string;
+}
+
+interface MainCommentDetails extends CommentDetails {
+  replies: CommentDetails[];
 }
 
 const Comments = () => {
-  const { currentUser } = useContext(AuthContext);
-  const comments: CommentDetails[] = [
+  const [replyIndex, setReplyIndex] = useState(-1);
+  const [comments, setComments] = useState<MainCommentDetails[]>([
     {
-      profilePicture: "https://picsum.photos/200",
-      name: "aaadd",
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
+      id: 1,
+      username: "Leston",
+      description: "jkdowngiowowjg",
+      date: "2023/3/4",
+      replies: [],
     },
     {
-      profilePicture: "https://picsum.photos/200",
-      name: "aaadd",
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
+      id: 1,
+      username: "Leston",
+      description: "jkdowngiowowjg",
+      date: "2023/3/4",
+      replies: [],
     },
     {
-      profilePicture: "https://picsum.photos/200",
-      name: "aaadd",
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
+      id: 1,
+      username: "Leston",
+      description: "jkdowngiowowjg",
+      date: "2023/3/4",
+      replies: [],
     },
-    {
-      profilePicture: "https://picsum.photos/200",
-      name: "aaadd",
-      description:
-        "loremdmmfkoernginewgnkwernfkw4nmglkn4woirj3on  3wkfnk3  v3iow4nfk n3o4fnr k3 f43nf vckwec 3nfk   c3nco32   odn23odm23wefmwef",
-    },
-  ];
+  ]);
   return (
-    <div>
-      <div className="flex gap-4 items-center pb-5 mb-5 ">
-        <img
-          className="w-10 h-10 rounded-full object-cover"
-          src={currentUser?.profilePic}
-          alt=""
-        />
-        <input className="input" type="text" placeholder="Write a comment" />
-        <button className="button">Send</button>
-      </div>
-      <div className="flex flex-col gap-4">
-        {comments.map((comment, index) => (
-          <div key={index} className="flex gap-4">
-            <img
-              className="w-10 h-10 rounded-full object-cover"
-              src={comment.profilePicture}
-              alt=""
-            />
-            <div>
-              <span className="font-bold">{comment.name}</span>
-              <p className="text-sm">{comment.description}</p>
-            </div>
-          </div>
-        ))}
+    <div className="max-w-screen-lg mx-auto mt-12 px-2">
+      <h3 className="font-bold text-4xl pb-2">COMMENTS</h3>
+
+      <div className="mt-2 mb-14 flex flex-col gap-4">
+        <div className="">
+          <ul>
+            {comments.map((comment, i) => (
+              <li className="py-2 border-b border-gray-200">
+                <div className="flex flex-col gap-1">
+                  <div className="flex gap-3 items-center">
+                    <p className="font-bold">{comment.username}</p>
+                    <p className="text-xs text-gray-400">{comment.date}</p>
+                  </div>
+                  <p>{comment.description}</p>
+                  {i == replyIndex ? (
+                    <PostComment />
+                  ) : (
+                    <a
+                      onClick={() => {
+                        setReplyIndex(i);
+                      }}
+                      className="cursor-pointer text-blue-400 hover:text-blue-500 text-sm"
+                    >
+                      Reply
+                    </a>
+                  )}
+                </div>
+                {i == replyIndex && <div className="mt-2"></div>}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {replyIndex == -1 ? (
+          <PostComment />
+        ) : (
+          <a
+            onClick={() => {
+              setReplyIndex(-1);
+            }}
+            className="cursor-pointer text-blue-400 hover:text-blue-500 text-sm"
+          >
+            Leave a comment
+          </a>
+        )}
       </div>
     </div>
   );

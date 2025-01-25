@@ -47,7 +47,7 @@ const router = createBrowserRouter([
         element: <HikeDetails />,
       },
       {
-        path: "/hike/addHike",
+        path: "/addHike",
         element: <AddHike />,
       },
     ],

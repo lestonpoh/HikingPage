@@ -16,8 +16,6 @@ const AddHike = () => {
     duration: "",
   });
 
-  const [file, setFile] = useState("");
-
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -31,9 +29,7 @@ const AddHike = () => {
     }));
   };
 
-  const fileOnUpload = (files: File[]) => {
-    if (files.length > 0) setFile(URL.createObjectURL(files[0]));
-  };
+  const fileOnUpload = (files: File[]) => {};
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -133,9 +129,6 @@ const AddHike = () => {
             }
             className="col-[1/3]"
           />
-          <div>
-            <img src={file} alt="" />
-          </div>
         </div>
         <div className="flex justify-end mt-6">
           <button className="button" onClick={submitOnClick}>
