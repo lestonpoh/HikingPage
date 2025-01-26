@@ -7,13 +7,14 @@ import PostComment from "../components/PostComment";
 import Comments from "../components/Comments";
 
 interface HikeDetails {
+  id: number;
   name: string;
   description: string;
   location: string;
-  access: string;
   elevation: number;
   difficulty: number;
   duration: number;
+  access: string;
 }
 
 interface HikePhoto {
@@ -98,7 +99,7 @@ function HikeDetails() {
           PHOTO GALLERY
         </div>
         {!photos && <p>Loading...</p>}
-        <div className="max-w-screen-lg py-10 px-8 m-auto flex flex-wrap gap-3 max-h-96">
+        <div className="max-w-screen-lg py-10 px-8 m-auto flex flex-wrap gap-3">
           {photos.map((photo) => (
             <div key={photo.id}>
               <img className="h-40" src={photo.url}></img>
@@ -107,7 +108,7 @@ function HikeDetails() {
         </div>
       </div>
 
-      <Comments />
+      <Comments id={details ? details.id : 0} />
     </div>
   );
 }

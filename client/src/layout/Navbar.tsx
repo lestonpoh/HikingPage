@@ -18,7 +18,7 @@ const Navbar = () => {
     <div className="bg-white flex items-center justify-between gap-7 px-5 py-2 border-b border-slate-200 shadow-sm sticky z-50 top-0">
       <div className="flex items-center gap-2">
         <Link to="/" className="font-bold">
-          HikeSocial
+          HikingPage
         </Link>
         {/* {darkMode ? (
           <WbSunnyOutlinedIcon onClick={toggle} className="cursor-pointer" />
@@ -31,27 +31,37 @@ const Navbar = () => {
           <Link to="/hike">Hike</Link>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <img
-          className="w-8 rounded-full"
-          src={"https://picsum.photos/200"}
-          alt="user profile image"
-        />
-        <div className="flex flex-col">
-          <Link
-            to={`/profile/${currentUser?.username}`}
-            className="font-bold w-full leading-5"
-          >
-            {currentUser?.username}
-          </Link>
-          <a
-            className="text-xs font-bold text-sky-500 cursor-pointer leading-3 ml-auto"
-            onClick={handleLogout}
-          >
-            Logout
-          </a>
+
+      {currentUser ? (
+        <div className="flex items-center gap-2">
+          <img
+            className="w-8 rounded-full"
+            src={"https://picsum.photos/200"}
+            alt="user profile image"
+          />
+          <div className="flex flex-col">
+            <Link
+              to={`/profile/${currentUser?.username}`}
+              className="font-bold w-full leading-5"
+            >
+              {currentUser?.username}
+            </Link>
+            <a
+              className="text-xs font-bold text-sky-500 cursor-pointer leading-3 ml-auto"
+              onClick={handleLogout}
+            >
+              Logout
+            </a>
+          </div>
         </div>
-      </div>
+      ) : (
+        <Link
+          className="text-xs font-bold text-sky-500 cursor-pointer leading-3 ml-auto"
+          to="/login"
+        >
+          Login
+        </Link>
+      )}
     </div>
   );
 };
