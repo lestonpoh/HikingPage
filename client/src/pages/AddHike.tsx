@@ -15,6 +15,7 @@ const AddHike = () => {
     difficulty: "",
     duration: "",
   });
+  const [files, setFiles] = useState<File[]>([]);
 
   const navigate = useNavigate();
 
@@ -29,7 +30,9 @@ const AddHike = () => {
     }));
   };
 
-  const fileOnUpload = (files: File[]) => {};
+  const fileOnUpload = (files: File[]) => {
+    setFiles(files);
+  };
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -43,10 +46,19 @@ const AddHike = () => {
       alert("error");
       return;
     }
+
+    const formData = new FormData();
+    files.forEach((file) => formData.append("files", file));
+    formData.append("description", inputs.description);
+    formData.append("location", inputs.location);
+    formData.append("elevation", inputs.elevation);
+    formData.append("difficulty", inputs.difficulty);
+    formData.append("duration", inputs.duration);
+
     axiosInstance
-      .post("/posts", inputs)
-      .then(() => {
-        navigate("/");
+      .post("/hike", formData)
+      .then((res) => {
+        console.log(res);
       })
       .catch((err) => {
         console.log(err);

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import axiosInstance from "../services/axiosInstance";
 import Input from "../components/Input";
 import SectionItem from "../components/SectionItem";
-import PostComment from "../components/PostComment";
-import Comments from "../components/Comments";
+import PostComment from "../components/comment/PostComment";
+import Comments from "../components/comment/Comments";
 
 interface HikeDetails {
   id: number;
@@ -107,8 +107,7 @@ function HikeDetails() {
           ))}
         </div>
       </div>
-
-      <Comments id={details ? details.id : 0} />
+      <Comments id={details ? details.id : -1} />
     </div>
   );
 }

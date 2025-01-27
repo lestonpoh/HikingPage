@@ -8,7 +8,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import PostDetails from "../interface/PostDetails";
 import { useState } from "react";
-import Comments from "./Comments";
+import Comments from "./comment/Comments";
 
 interface Props {
   post: PostDetails;
