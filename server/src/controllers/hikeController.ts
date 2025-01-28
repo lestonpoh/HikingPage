@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import moment from "moment";
 import { body, validationResult } from "express-validator";
 import { uploadMultipleFiles } from "../utils/uploadMultipleFiles";
-
+import fs from "fs";
 dotenv.config();
 
 interface RequestCustom extends Request {
@@ -31,7 +31,8 @@ export const getHikeDetails = (req: Request, res: Response) => {
 };
 
 // ADD POST
-const validateAddPost = [
+const validateAddHike = [
+  body("name").notEmpty(),
   body("description").notEmpty().isLength({ max: 2000 }),
   body("location").notEmpty().isLength({ max: 100 }),
   body("elevation").notEmpty().isInt({ min: 0 }),
@@ -39,15 +40,8 @@ const validateAddPost = [
   body("duration").notEmpty().isFloat({ min: 0 }),
 ];
 
-export const addPost = [
-  ...validateAddPost,
+export const addHike = [
   (req: RequestCustom, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
-      return;
-    }
-
     const token = req.cookies.accessToken;
     if (!token) {
       res.status(401).json("Not logged in!");
@@ -66,12 +60,31 @@ export const addPost = [
     );
   },
   uploadMultipleFiles,
+  ...validateAddHike,
   (req: RequestCustom, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const files = req.files as Express.Multer.File[];
+
+      if (files) {
+        files.forEach((file) => {
+          fs.unlink(file.path, (err) => {
+            if (err)
+              console.error("Failed to delete file on validation failure", err);
+          });
+        });
+      }
+
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
     const q =
-      "INSERT INTO hike (`userId`,`description`, `location`, `elevation`, `difficulty`, `duration`,`createdAt`) VALUES (?)";
+      "INSERT INTO hike (`userId`,`name`,`description`, `location`, `elevation`, `difficulty`, `duration`,`createdAt`) VALUES (?)";
 
     const values = [
       req.userInfo.id,
+      req.body.name,
       req.body.description,
       req.body.location,
       req.body.elevation,

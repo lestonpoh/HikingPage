@@ -9,6 +9,7 @@ import FileUpload from "../components/FileUpload";
 const AddHike = () => {
   const { id } = useParams();
   const [inputs, setInputs] = useState({
+    name: "",
     description: "",
     location: "",
     elevation: "",
@@ -36,19 +37,21 @@ const AddHike = () => {
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (
-      inputs.description === "" ||
-      inputs.elevation === "" ||
-      inputs.difficulty === "" ||
-      inputs.duration === "" ||
-      inputs.location === ""
-    ) {
-      alert("error");
-      return;
-    }
+    // if (
+    //   inputs.name === "" ||
+    //   inputs.description === "" ||
+    //   inputs.elevation === "" ||
+    //   inputs.difficulty === "" ||
+    //   inputs.duration === "" ||
+    //   inputs.location === ""
+    // ) {
+    //   alert("error");
+    //   return;
+    // }
 
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
+    formData.append("name", inputs.name);
     formData.append("description", inputs.description);
     formData.append("location", inputs.location);
     formData.append("elevation", inputs.elevation);
@@ -56,7 +59,11 @@ const AddHike = () => {
     formData.append("duration", inputs.duration);
 
     axiosInstance
-      .post("/hike", formData)
+      .post("/hike", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then((res) => {
         console.log(res);
       })
@@ -70,6 +77,19 @@ const AddHike = () => {
       <h1 className="font-bold text-xl mb-6">Add New Hike</h1>
       <form>
         <div className="grid gap-5 md:grid-cols-2">
+          <SectionItem
+            label={<label htmlFor="name">Name</label>}
+            body={
+              <input
+                id="name"
+                className="input"
+                type="text"
+                placeholder="Enter name"
+                name="name"
+                onChange={handleChange}
+              />
+            }
+          />
           <SectionItem
             label={<label htmlFor="description">Description</label>}
             body={
