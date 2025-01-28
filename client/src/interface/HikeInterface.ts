@@ -5,4 +5,5 @@ export interface HikeInterface {
   elevation: number;
   difficulty: number;
   duration: number;
+  fileName: string;
 }

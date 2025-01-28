@@ -13,8 +13,11 @@ const Hike = ({ hike }: Props) => {
 
   return (
     <div onClick={() => hikeOnClick(hike.name)}>
-      <div className="m-2 cursor-pointer rounded border-solid border border-black hover:shadow-md">
-        <img className="" src={"https://picsum.photos/200"} />
+      <div className="m-2 cursor-pointer rounded  hover:shadow-md">
+        <img
+          className="w-64 h-64 object-cover"
+          src={`${import.meta.env.VITE_SERVER_UPLOADS_URL}/${hike.fileName}`}
+        />
         <div className="px-2 py-1 font-bold text-s bg-sky-200">{hike.name}</div>
         <div className="flex gap-1 text-xs px-2 py-1 bg-sky-400">
           <div className="flex-1">{hike.elevation}m</div>

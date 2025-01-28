@@ -1,5 +1,6 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import axiosInstance from "../services/axiosInstance";
+import { useCookies } from "react-cookie";
 
 interface AuthContextType {
   currentUser: User | null;
@@ -12,10 +13,7 @@ interface Props {
 }
 
 interface User {
-  id: number;
   username: string;
-  email: string;
-  profilePic: string;
 }
 
 interface LoginInputs {
@@ -30,17 +28,16 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthContextProvider = ({ children }: Props) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const savedCurrentUser = localStorage.getItem("user");
-    return savedCurrentUser ? JSON.parse(savedCurrentUser) : null;
-  });
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [cookies] = useCookies();
+  const accesstoken = cookies.accessToken;
 
   const login = (inputs: LoginInputs) => {
     return axiosInstance
       .post("/auth/login", inputs)
       .then((res) => {
-        const { id, username, email, profilePic } = res.data;
-        setCurrentUser({ id, username, email, profilePic });
+        const { username } = res.data;
+        setCurrentUser(username);
       })
       .catch((err) => {
         throw err;
@@ -59,12 +56,18 @@ export const AuthContextProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    if (currentUser != null) {
-      localStorage.setItem("user", JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem("user");
+    if (accesstoken) {
+      console.log("hello");
+      axiosInstance
+        .get("/auth/validateUser")
+        .then((res) => {
+          setCurrentUser(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }, [currentUser]);
+  });
 
   return (
     <AuthContext.Provider value={{ currentUser, login, logout }}>

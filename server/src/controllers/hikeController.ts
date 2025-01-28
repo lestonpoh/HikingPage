@@ -21,12 +21,12 @@ interface SQLHikeOutput {
   elevation: number;
   difficulty: number;
   duration: number;
-  filePath: string;
+  fileName: string;
 }
 
 export const getHikes = (req: Request, res: Response) => {
   const q =
-    "SELECT id, name, location, elevation ,difficulty, duration FROM hike ORDER BY createdAt DESC";
+    "SELECT hike.id, name, location, elevation ,difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true ORDER BY createdAt DESC";
   db.query(q, (err, data) => {
     if (err) return res.status(500).json(err);
 
@@ -36,7 +36,7 @@ export const getHikes = (req: Request, res: Response) => {
 
 export const getHikeDetails = (req: Request, res: Response) => {
   const q =
-    "SELECT hike.id, name, description, location, elevation, difficulty, duration, filePath FROM hike LEFT JOIN photo ON hike.id = photo.hikeId WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
+    "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
   db.query(q, [req.params.name], (err, data: SQLHikeOutput[]) => {
     if (err) return res.status(500).json(err);
     if (!data || data.length === 0) return res.status(404).json("Not Found");
@@ -53,8 +53,8 @@ export const getHikeDetails = (req: Request, res: Response) => {
     };
 
     data.forEach((row) => {
-      if (row.filePath) {
-        output.files.push(row.filePath);
+      if (row.fileName) {
+        output.files.push(row.fileName);
       }
     });
 

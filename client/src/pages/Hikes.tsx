@@ -25,7 +25,7 @@ function Hikes() {
           ? "Loading"
           : data?.length === 0
           ? "No hikes found"
-          : data?.map((hike) => <Hike hike={hike} />)}
+          : data?.map((hike, i) => <Hike key={i} hike={hike} />)}
       </div>
     </div>
   );

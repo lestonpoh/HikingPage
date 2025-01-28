@@ -6,8 +6,9 @@ import { ChangeEvent, useContext, useState } from "react";
 const Login = () => {
   // navigate to home if loggedin
   const { currentUser } = useContext(AuthContext);
+
   if (currentUser) {
-    return <Navigate to="/" />;
+    return <Navigate to="/hike" />;
   }
 
   const [inputs, setInputs] = useState({
