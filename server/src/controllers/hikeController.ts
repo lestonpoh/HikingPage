@@ -6,10 +6,22 @@ import moment from "moment";
 import { body, validationResult } from "express-validator";
 import { uploadMultipleFiles } from "../utils/uploadMultipleFiles";
 import fs from "fs";
+
 dotenv.config();
 
 interface RequestCustom extends Request {
   userInfo?: any;
+}
+
+interface SQLHikeOutput {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  elevation: number;
+  difficulty: number;
+  duration: number;
+  filePath: string;
 }
 
 export const getHikes = (req: Request, res: Response) => {
@@ -17,16 +29,36 @@ export const getHikes = (req: Request, res: Response) => {
     "SELECT id, name, location, elevation ,difficulty, duration FROM hike ORDER BY createdAt DESC";
   db.query(q, (err, data) => {
     if (err) return res.status(500).json(err);
+
     return res.status(200).json(data);
   });
 };
 
 export const getHikeDetails = (req: Request, res: Response) => {
   const q =
-    "SELECT id,name, description, location, elevation, difficulty, duration FROM hike WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
-  db.query(q, [req.params.name], (err, data) => {
+    "SELECT hike.id, name, description, location, elevation, difficulty, duration, filePath FROM hike LEFT JOIN photo ON hike.id = photo.hikeId WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
+  db.query(q, [req.params.name], (err, data: SQLHikeOutput[]) => {
     if (err) return res.status(500).json(err);
-    return res.status(200).json(data);
+    if (!data || data.length === 0) return res.status(404).json("Not Found");
+
+    const output = {
+      id: data[0].id,
+      name: data[0].name,
+      description: data[0].description,
+      location: data[0].location,
+      elevation: data[0].elevation,
+      difficulty: data[0].difficulty,
+      duration: data[0].duration,
+      files: [] as String[],
+    };
+
+    data.forEach((row) => {
+      if (row.filePath) {
+        output.files.push(row.filePath);
+      }
+    });
+
+    return res.status(200).json(output);
   });
 };
 
@@ -79,43 +111,52 @@ export const addHike = [
       return;
     }
 
-    const q =
-      "INSERT INTO hike (`userId`,`name`,`description`, `location`, `elevation`, `difficulty`, `duration`,`createdAt`) VALUES (?)";
+    const checkHikeNameQuery = "SELECT id FROM hike WHERE hike.name = (?)";
 
-    const values = [
-      req.userInfo.id,
-      req.body.name,
-      req.body.description,
-      req.body.location,
-      req.body.elevation,
-      req.body.difficulty,
-      req.body.duration,
-      moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-    ];
-
-    db.query(q, [values], (err, data) => {
+    db.query(checkHikeNameQuery, [req.body.name], (err, data) => {
       if (err) return res.status(500).json(err);
-
-      const hikeId = data.insertId;
-
-      if (!req.files || req.files.length === 0) {
-        return res.status(200).json("Hike has been created with no files");
+      if (data.length) {
+        return res.status(409).json("Name already exist!");
       }
 
-      const files = req.files as Express.Multer.File[];
+      const q =
+        "INSERT INTO hike (`userId`,`name`,`description`, `location`, `elevation`, `difficulty`, `duration`,`createdAt`) VALUES (?)";
 
-      const filePaths = files.map((file) => file.path);
+      const values = [
+        req.userInfo.id,
+        req.body.name,
+        req.body.description,
+        req.body.location,
+        req.body.elevation,
+        req.body.difficulty,
+        req.body.duration,
+        moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      ];
 
-      filePaths.forEach((filePath) => {
-        const q = "INSERT INTO photo (`hikeId`,`filePath`) VALUES (?)";
+      db.query(q, [values], (err, data) => {
+        if (err) return res.status(500).json(err);
 
-        const values = [hikeId, filePath];
-        db.query(q, [values], (err) => {
-          if (err) return res.status(500).json(err);
+        const hikeId = data.insertId;
+
+        if (!req.files || req.files.length === 0) {
+          return res.status(200).json("Hike has been created with no files");
+        }
+
+        const files = req.files as Express.Multer.File[];
+
+        const fileNames = files.map((file) => file.filename);
+
+        fileNames.forEach((fileName) => {
+          const q = "INSERT INTO photo (`hikeId`,`filePath`) VALUES (?)";
+
+          const values = [hikeId, fileName];
+          db.query(q, [values], (err) => {
+            if (err) return res.status(500).json(err);
+          });
         });
-      });
 
-      return res.status(200).json("Hike has been created with files");
+        return res.status(200).json("Hike has been created with files");
+      });
     });
   },
 ];

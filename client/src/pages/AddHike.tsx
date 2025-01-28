@@ -37,17 +37,17 @@ const AddHike = () => {
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // if (
-    //   inputs.name === "" ||
-    //   inputs.description === "" ||
-    //   inputs.elevation === "" ||
-    //   inputs.difficulty === "" ||
-    //   inputs.duration === "" ||
-    //   inputs.location === ""
-    // ) {
-    //   alert("error");
-    //   return;
-    // }
+    if (
+      inputs.name === "" ||
+      inputs.description === "" ||
+      inputs.elevation === "" ||
+      inputs.difficulty === "" ||
+      inputs.duration === "" ||
+      inputs.location === ""
+    ) {
+      alert("error");
+      return;
+    }
 
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
@@ -65,7 +65,7 @@ const AddHike = () => {
         },
       })
       .then((res) => {
-        console.log(res);
+        navigate("/hike/" + inputs.name.split(" ").join("-").toLowerCase());
       })
       .catch((err) => {
         console.log(err);

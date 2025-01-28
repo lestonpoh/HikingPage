@@ -14,7 +14,7 @@ interface HikeDetails {
   elevation: number;
   difficulty: number;
   duration: number;
-  access: string;
+  files: string[];
 }
 
 interface HikePhoto {
@@ -32,22 +32,22 @@ function HikeDetails() {
     axiosInstance
       .get("/hike/" + name)
       .then((res) => {
-        setDetails(res.data[0]);
+        setDetails(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
 
-    axiosInstance
-      .get("https://jsonplaceholder.typicode.com/photos")
-      .then((res) =>
-        setPhotos(
-          res.data.slice(0, 30).map((element: any) => {
-            return { id: element.id, url: element.url };
-          })
-        )
-      )
-      .catch((error) => console.log(error));
+    // axiosInstance
+    //   .get("https://jsonplaceholder.typicode.com/photos")
+    //   .then((res) =>
+    //     setPhotos(
+    //       res.data.slice(0, 30).map((element: any) => {
+    //         return { id: element.id, url: element.url };
+    //       })
+    //     )
+    //   )
+    //   .catch((error) => console.log(error));
   }, []);
 
   // if (!hike) {
@@ -86,8 +86,8 @@ function HikeDetails() {
               <h1 className="font-bold">LOCATION</h1>
               <p>{details.location}</p>
 
-              <h1 className="font-bold">ACCESS</h1>
-              <p>{details.access}</p>
+              {/* <h1 className="font-bold">ACCESS</h1>
+              <p>{details.access}</p> */}
             </div>
           </div>
         </div>
@@ -100,10 +100,12 @@ function HikeDetails() {
         </div>
         {!photos && <p>Loading...</p>}
         <div className="max-w-screen-lg py-10 px-8 m-auto flex flex-wrap gap-3">
-          {photos.map((photo) => (
-            <div key={photo.id}>
-              <img className="h-40" src={photo.url}></img>
-            </div>
+          {details?.files.map((file, i) => (
+            <img
+              key={i}
+              className="h-48 w-40"
+              src={`${import.meta.env.VITE_SERVER_UPLOADS_URL}/${file}`}
+            ></img>
           ))}
         </div>
       </div>

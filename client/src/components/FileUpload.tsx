@@ -69,7 +69,7 @@ const FileUpload = ({ onFilesSelected }: Props) => {
           hidden
           id="browse"
           onChange={handleFileChange}
-          accept=".png,.jpeg"
+          accept=".png,.jpeg,.jpg"
           multiple
         />
         <label htmlFor="browse" className="button">

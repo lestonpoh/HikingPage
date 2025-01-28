@@ -9,6 +9,7 @@ import likeRoutes from "./routes/likes";
 import hikeRoutes from "./routes/hikeRoute";
 import replyRoutes from "./routes/replyRoute";
 import uploadRoutes from "./routes/uploadRoute";
+const path = require("path");
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use("/api/likes", likeRoutes);
 app.use("/api/hike", hikeRoutes);
 app.use("/api/reply", replyRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const port = process.env.PORT;
 
