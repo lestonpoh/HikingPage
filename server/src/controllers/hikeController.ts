@@ -36,7 +36,7 @@ export const getHikes = (req: Request, res: Response) => {
 
 export const getHikeDetails = (req: Request, res: Response) => {
   const q =
-    "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
+    "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = false WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
   db.query(q, [req.params.name], (err, data: SQLHikeOutput[]) => {
     if (err) return res.status(500).json(err);
     if (!data || data.length === 0) return res.status(404).json("Not Found");
@@ -146,16 +146,21 @@ export const addHike = [
 
         const fileNames = files.map((file) => file.filename);
 
+        let hasError: Boolean = false;
         fileNames.forEach((fileName) => {
-          const q = "INSERT INTO photo (`hikeId`,`filePath`) VALUES (?)";
+          const q = "INSERT INTO photo (`hikeId`,`fileName`) VALUES (?)";
 
           const values = [hikeId, fileName];
           db.query(q, [values], (err) => {
-            if (err) return res.status(500).json(err);
+            if (err) {
+              hasError = true;
+              return res.status(500).json(err);
+            }
           });
         });
 
-        return res.status(200).json("Hike has been created with files");
+        if (!hasError)
+          return res.status(200).json("Hike has been created with files");
       });
     });
   },
