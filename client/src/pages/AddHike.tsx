@@ -16,7 +16,8 @@ const AddHike = () => {
     difficulty: "",
     duration: "",
   });
-  const [files, setFiles] = useState<File[]>([]);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [coverFile, setCoverFile] = useState<File>();
 
   const navigate = useNavigate();
 
@@ -31,8 +32,12 @@ const AddHike = () => {
     }));
   };
 
+  const coverFileOnUpload = (file: File) => {
+    setCoverFile(file);
+  };
+
   const fileOnUpload = (files: File[]) => {
-    setFiles(files);
+    setPhotoFiles(files);
   };
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -50,7 +55,10 @@ const AddHike = () => {
     }
 
     const formData = new FormData();
-    files.forEach((file) => formData.append("files", file));
+    photoFiles.forEach((file) => formData.append("photoFiles", file));
+    if (coverFile) {
+      formData.append("coverFile", coverFile);
+    }
     formData.append("name", inputs.name);
     formData.append("description", inputs.description);
     formData.append("location", inputs.location);
@@ -149,11 +157,23 @@ const AddHike = () => {
               <Dropdown options={countriesList} onSelected={locationOnSelect} />
             }
           />
-
+          <SectionItem
+            label="Upload Cover Image"
+            body={
+              <FileUpload
+                maxFiles={2}
+                onFilesSelected={(file) => {
+                  coverFileOnUpload(file[0]);
+                }}
+              />
+            }
+            className="col-[1/3]"
+          />
           <SectionItem
             label="Upload Images"
             body={
               <FileUpload
+                maxFiles={10}
                 onFilesSelected={(files) => {
                   fileOnUpload(files);
                 }}

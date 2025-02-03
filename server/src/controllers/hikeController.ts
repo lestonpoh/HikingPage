@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import moment from "moment";
 import { body, validationResult } from "express-validator";
-import { uploadMultipleFiles } from "../utils/uploadMultipleFiles";
+import { multerUpload } from "../utils/uploadMultipleFiles";
 import fs from "fs";
 
 dotenv.config();
@@ -62,6 +62,17 @@ export const getHikeDetails = (req: Request, res: Response) => {
   });
 };
 
+const unlinkFiles = (files: Express.Multer.File[]) => {
+  if (files) {
+    files.forEach((file) => {
+      fs.unlink(file.path, (err) => {
+        if (err)
+          console.error("Failed to delete file on validation failure", err);
+      });
+    });
+  }
+};
+
 // ADD POST
 const validateAddHike = [
   body("name").notEmpty(),
@@ -91,22 +102,16 @@ export const addHike = [
       }
     );
   },
-  uploadMultipleFiles,
+  multerUpload.fields([
+    { name: "coverFile", maxCount: 1 },
+    { name: "photoFiles" },
+  ]),
   ...validateAddHike,
   (req: RequestCustom, res: Response) => {
+    const allFiles = req.files as Express.Multer.File[];
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const files = req.files as Express.Multer.File[];
-
-      if (files) {
-        files.forEach((file) => {
-          fs.unlink(file.path, (err) => {
-            if (err)
-              console.error("Failed to delete file on validation failure", err);
-          });
-        });
-      }
-
+      unlinkFiles(allFiles);
       res.status(400).json({ errors: errors.array() });
       return;
     }
@@ -116,6 +121,7 @@ export const addHike = [
     db.query(checkHikeNameQuery, [req.body.name], (err, data) => {
       if (err) return res.status(500).json(err);
       if (data.length) {
+        unlinkFiles(allFiles);
         return res.status(409).json("Name already exist!");
       }
 
@@ -142,22 +148,39 @@ export const addHike = [
           return res.status(200).json("Hike has been created with no files");
         }
 
-        const files = req.files as Express.Multer.File[];
-
-        const fileNames = files.map((file) => file.filename);
+        const files = req.files as { [key: string]: Express.Multer.File[] };
 
         let hasError: Boolean = false;
-        fileNames.forEach((fileName) => {
-          const q = "INSERT INTO photo (`hikeId`,`fileName`) VALUES (?)";
 
-          const values = [hikeId, fileName];
-          db.query(q, [values], (err) => {
+        if (files.coverFile) {
+          const coverFileName = files.coverFile[0].filename;
+          const coverQuery =
+            "INSERT INTO photo (`hikeId`,`fileName`,'isCover') VALUES (?)";
+          const coverValues = [hikeId, coverFileName, true];
+
+          db.query(coverQuery, [coverValues], (err) => {
             if (err) {
               hasError = true;
               return res.status(500).json(err);
             }
           });
-        });
+        }
+
+        if (files.photoFiles) {
+          files.photoFiles.forEach((file) => {
+            const fileName = file.filename;
+            const photoQuery =
+              "INSERT INTO photo (`hikeId`, `fileName`, `isCover`) VALUES (?)";
+            const photoValues = [hikeId, fileName, false];
+
+            db.query(photoQuery, [photoValues], (err) => {
+              if (err) {
+                hasError = true;
+                return res.status(500).json(err);
+              }
+            });
+          });
+        }
 
         if (!hasError)
           return res.status(200).json("Hike has been created with files");

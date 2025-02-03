@@ -1,28 +1,41 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 
 interface Props {
   onFilesSelected: (files: File[]) => void;
+  maxFiles: number;
 }
 
-const FileUpload = ({ onFilesSelected }: Props) => {
+const FileUpload = ({ onFilesSelected, maxFiles }: Props) => {
+  const fileInput = useRef<HTMLInputElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [isError, setIsError] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [photoList, setPhotoList] = useState<string[]>([]);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (selectedFiles && selectedFiles.length > 0) {
-      setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+  const handleFileUpload = (uploadedFiles: File[]) => {
+    if (files.length + uploadedFiles.length > maxFiles) {
+      setIsError(true);
+      uploadedFiles = uploadedFiles.slice(0, maxFiles - files.length);
     }
+
+    if (uploadedFiles && uploadedFiles.length > 0) {
+      setFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
+    }
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files as ArrayLike<File>);
+
+    handleFileUpload(selectedFiles);
+    e.target.value = "";
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const dropFiles = e.dataTransfer.files;
-    if (dropFiles.length > 0) {
-      setFiles((prevFiles) => [...prevFiles, ...dropFiles]);
-    }
+    const dropFiles = [...e.dataTransfer.files];
+    handleFileUpload(dropFiles);
+    setIsDragOver(false);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -35,8 +48,16 @@ const FileUpload = ({ onFilesSelected }: Props) => {
     setIsDragOver(false);
   };
 
+  const browseFilesOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    fileInput.current?.click();
+  };
+
   const handleRemoveFile = (index: number) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    if (files.length <= maxFiles) {
+      setIsError(false);
+    }
   };
 
   const displayPhotos = (files: File[]) => {
@@ -63,19 +84,25 @@ const FileUpload = ({ onFilesSelected }: Props) => {
     `}
       >
         <div className="font-bold text-lg">Drop your files here to upload</div>
-        <div className="text-sm">Supported file types: png, jpeg</div>
+        <div className="text-sm">Supported file types: png, jpeg, jpg</div>
+        <div className="text-xs">Up to {maxFiles} file(s)</div>
         <input
           type="file"
           hidden
-          id="browse"
+          ref={fileInput}
           onChange={handleFileChange}
           accept=".png,.jpeg,.jpg"
-          multiple
+          multiple={maxFiles > 1 ? true : false}
         />
-        <label htmlFor="browse" className="button">
+        <button onClick={browseFilesOnClick} className="button">
           Browse files
-        </label>
+        </button>
       </div>
+      {isError && (
+        <p className="text-red-500 text-xs mt-1">
+          Maximum {maxFiles} file(s) accepted
+        </p>
+      )}
       <div className="mt-3">
         <ul className="flex flex-wrap gap-3">
           {photoList.map((photo, i) => (

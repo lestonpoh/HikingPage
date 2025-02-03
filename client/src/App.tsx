@@ -20,11 +20,7 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
-    ),
+    element: <Layout />,
     children: [
       {
         path: "/",
@@ -48,7 +44,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/addHike",
-        element: <AddHike />,
+        element: (
+          <ProtectedRoute>
+            <AddHike />
+          </ProtectedRoute>
+        ),
       },
     ],
     errorElement: <ErrorPage />,
@@ -61,10 +61,6 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
-  },
-  {
-    path: "/",
-    element: <Hikes />,
   },
   {
     path: "/error",

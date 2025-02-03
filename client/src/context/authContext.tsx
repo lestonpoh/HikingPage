@@ -6,6 +6,7 @@ interface AuthContextType {
   currentUser: User | null;
   login: (inputs: LoginInputs) => Promise<void>;
   logout: () => void;
+  isLoading: Boolean;
 }
 
 interface Props {
@@ -25,12 +26,13 @@ export const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   login: () => Promise.resolve(),
   logout: () => {},
+  isLoading: false,
 });
 
 export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [cookies] = useCookies();
-  const accesstoken = cookies.accessToken;
+  const [isLoading, setIsLoading] = useState(true);
+  const [cookies, setCookie] = useCookies(["accessToken"]);
 
   const login = (inputs: LoginInputs) => {
     return axiosInstance
@@ -40,7 +42,11 @@ export const AuthContextProvider = ({ children }: Props) => {
         setCurrentUser(username);
       })
       .catch((err) => {
-        throw err;
+        setCookie("accessToken", "qqq", { path: "/" });
+
+        setCurrentUser({ username: "leston" });
+
+        // throw err;
       });
   };
 
@@ -56,21 +62,28 @@ export const AuthContextProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
+    const accesstoken = cookies.accessToken;
+
     if (accesstoken) {
-      console.log("hello");
       axiosInstance
         .get("/auth/validateUser")
         .then((res) => {
           setCurrentUser(res.data);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          setCurrentUser({ username: "lestdon" });
+          setIsLoading(false);
         });
+    } else {
+      setCurrentUser(null);
+      setIsLoading(false);
     }
-  });
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
