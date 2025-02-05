@@ -8,7 +8,6 @@ interface Props {
 
 const ProtectedRoute = ({ children }: Props) => {
   const { isLoading, currentUser } = useContext(AuthContext);
-  console.log("se" + isLoading);
   if (isLoading) {
     return <div>Loading</div>;
   }

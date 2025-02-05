@@ -22,6 +22,19 @@ interface SQLHikeOutput {
   difficulty: number;
   duration: number;
   fileName: string;
+  isCover: boolean;
+}
+
+interface HikeDetails {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  elevation: number;
+  difficulty: number;
+  duration: number;
+  photos: string[];
+  coverPhoto?: string;
 }
 
 export const getHikes = (req: Request, res: Response) => {
@@ -36,12 +49,12 @@ export const getHikes = (req: Request, res: Response) => {
 
 export const getHikeDetails = (req: Request, res: Response) => {
   const q =
-    "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = false WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
+    "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName, isCover FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = false WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
   db.query(q, [req.params.name], (err, data: SQLHikeOutput[]) => {
     if (err) return res.status(500).json(err);
     if (!data || data.length === 0) return res.status(404).json("Not Found");
 
-    const output = {
+    const output: HikeDetails = {
       id: data[0].id,
       name: data[0].name,
       description: data[0].description,
@@ -49,12 +62,16 @@ export const getHikeDetails = (req: Request, res: Response) => {
       elevation: data[0].elevation,
       difficulty: data[0].difficulty,
       duration: data[0].duration,
-      files: [] as String[],
+      photos: [],
     };
 
     data.forEach((row) => {
       if (row.fileName) {
-        output.files.push(row.fileName);
+        if (row.isCover) {
+          output.coverPhoto = row.fileName;
+        } else {
+          output.photos.push(row.fileName);
+        }
       }
     });
 
@@ -62,10 +79,10 @@ export const getHikeDetails = (req: Request, res: Response) => {
   });
 };
 
-const unlinkFiles = (files: Express.Multer.File[]) => {
-  if (files) {
-    files.forEach((file) => {
-      fs.unlink(file.path, (err) => {
+const unlinkFiles = (filenames: string[]) => {
+  if (filenames) {
+    filenames.forEach((filename) => {
+      fs.unlink("./src/uploads" + filename, (err) => {
         if (err)
           console.error("Failed to delete file on validation failure", err);
       });
@@ -111,7 +128,7 @@ export const addHike = [
     const allFiles = req.files as Express.Multer.File[];
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      unlinkFiles(allFiles);
+      unlinkFiles(allFiles.map((file) => file.filename));
       res.status(400).json({ errors: errors.array() });
       return;
     }
@@ -121,7 +138,7 @@ export const addHike = [
     db.query(checkHikeNameQuery, [req.body.name], (err, data) => {
       if (err) return res.status(500).json(err);
       if (data.length) {
-        unlinkFiles(allFiles);
+        unlinkFiles(allFiles.map((file) => file.filename));
         return res.status(409).json("Name already exist!");
       }
 
@@ -161,7 +178,6 @@ export const addHike = [
           db.query(coverQuery, [coverValues], (err) => {
             if (err) {
               hasError = true;
-              return res.status(500).json(err);
             }
           });
         }
@@ -176,7 +192,127 @@ export const addHike = [
             db.query(photoQuery, [photoValues], (err) => {
               if (err) {
                 hasError = true;
-                return res.status(500).json(err);
+              }
+            });
+          });
+        }
+
+        if (!hasError)
+          return res.status(200).json("Hike has been created with files");
+      });
+    });
+  },
+];
+
+// UPDATE POST
+const validateUpdateHike = [
+  body("description").notEmpty().isLength({ max: 2000 }),
+  body("location").notEmpty().isLength({ max: 100 }),
+  body("elevation").notEmpty().isInt({ min: 0 }),
+  body("difficulty").notEmpty().isInt({ min: 0, max: 10 }),
+  body("duration").notEmpty().isFloat({ min: 0 }),
+];
+
+export const updateHike = [
+  (req: RequestCustom, res: Response, next: NextFunction) => {
+    const token = req.cookies.accessToken;
+    if (!token) {
+      res.status(401).json("Not logged in!");
+      return;
+    }
+
+    jwt.verify(
+      token,
+      process.env.JWT_SECRET as string,
+      (err: any, userInfo: any) => {
+        if (err) return res.status(403).json("Token not valid");
+
+        req.userInfo = userInfo;
+        next();
+      }
+    );
+  },
+  multerUpload.fields([
+    { name: "coverFile", maxCount: 1 },
+    { name: "photoFiles" },
+  ]),
+  ...validateAddHike,
+  (req: RequestCustom, res: Response) => {
+    const allFiles = req.files as Express.Multer.File[];
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      unlinkFiles(allFiles.map((file) => file.filename));
+      res.status(400).json({ errors: errors.array() });
+      return;
+    }
+
+    const getHikeIdQuery = "SELECT id FROM hike WHERE hike.name = (?)";
+
+    db.query(getHikeIdQuery, [req.params.name], (err, data) => {
+      if (err) return res.status(500).json(err);
+
+      const hikeId = data[0].id;
+      const updateQuery =
+        "UPDATE hike SET `description=?`, `location=?`, `elevation=?`, `difficulty=?`, `duration=?`) WHERE id = ?";
+
+      const values = [
+        req.body.description,
+        req.body.location,
+        req.body.elevation,
+        req.body.difficulty,
+        req.body.duration,
+        hikeId,
+      ];
+
+      db.query(updateQuery, [values], (err, data) => {
+        if (err) return res.status(500).json(err);
+
+        // Get all existing photos
+        const getHikePhotosQuery =
+          "SELECT fileName FROM photo WHERE photo.hikeId = ?";
+        const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
+
+        db.query(getHikePhotosQuery, [hikeId], (err, data) => {
+          if (err) return res.status(500).json(err);
+          unlinkFiles(data.map((file: any) => file.filename));
+        });
+
+        // delete all photos from hike in db
+        db.query(deletePhotosQuery, [hikeId], (err, data) => {
+          if (err) return res.status(500).json(err);
+        });
+
+        if (!req.files || req.files.length === 0) {
+          return res.status(200).json("Hike has been created with no files");
+        }
+
+        const files = req.files as { [key: string]: Express.Multer.File[] };
+
+        let hasError: Boolean = false;
+
+        if (files.coverFile) {
+          const coverFileName = files.coverFile[0].filename;
+          const coverQuery =
+            "INSERT INTO photo (`hikeId`,`fileName`,'isCover') VALUES (?)";
+          const coverValues = [hikeId, coverFileName, true];
+
+          db.query(coverQuery, [coverValues], (err) => {
+            if (err) {
+              hasError = true;
+            }
+          });
+        }
+
+        if (files.photoFiles) {
+          files.photoFiles.forEach((file) => {
+            const fileName = file.filename;
+            const photoQuery =
+              "INSERT INTO photo (`hikeId`, `fileName`, `isCover`) VALUES (?)";
+            const photoValues = [hikeId, fileName, false];
+
+            db.query(photoQuery, [photoValues], (err) => {
+              if (err) {
+                hasError = true;
               }
             });
           });

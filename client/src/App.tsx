@@ -43,7 +43,7 @@ const router = createBrowserRouter([
         element: <HikeDetails />,
       },
       {
-        path: "/addHike",
+        path: "/addHike/:name?",
         element: (
           <ProtectedRoute>
             <AddHike />

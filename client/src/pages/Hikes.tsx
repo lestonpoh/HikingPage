@@ -5,7 +5,7 @@ import { HikeInterface } from "../interface/HikeInterface";
 import { useNavigate } from "react-router-dom";
 
 function Hikes() {
-  const { isPending, error, data } = useQuery<HikeInterface[]>({
+  const { isPending, data } = useQuery<HikeInterface[]>({
     queryKey: ["hikes"],
     queryFn: () =>
       axiosInstance

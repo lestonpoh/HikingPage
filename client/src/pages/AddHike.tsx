@@ -1,13 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import SectionItem from "../components/SectionItem";
-import { ChangeEvent, MouseEvent, useState } from "react";
+import { ChangeEvent, MouseEvent, useEffect, useState } from "react";
 import Dropdown from "../components/Dropdown";
 import { countriesList } from "../data/countries";
 import axiosInstance from "../services/axiosInstance";
 import FileUpload from "../components/FileUpload";
+import { HikeDetail } from "../interface/HikeDetailsInterface";
 
 const AddHike = () => {
-  const { id } = useParams();
+  const { name } = useParams();
+  const [hikeName, setHikeName] = useState("");
+
   const [inputs, setInputs] = useState({
     name: "",
     description: "",
@@ -80,9 +83,33 @@ const AddHike = () => {
       });
   };
 
+  useEffect(() => {
+    if (name) {
+      axiosInstance
+        .get("/hike/" + name)
+        .then((res) => {
+          const hikeDetails: HikeDetail = res.data;
+          setHikeName(hikeDetails.name);
+          setInputs({
+            name: hikeDetails.name,
+            description: hikeDetails.description,
+            location: hikeDetails.location,
+            elevation: hikeDetails.elevation.toString(),
+            difficulty: hikeDetails.description,
+            duration: hikeDetails.duration.toString(),
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, []);
+
   return (
     <div className="max-w-screen-lg mx-auto px-5 mt-10">
-      <h1 className="font-bold text-xl mb-6">Add New Hike</h1>
+      <h1 className="font-bold text-xl mb-6">
+        {name ? "Edit" + hikeName : "Add New Hike"}
+      </h1>
       <form>
         <div className="grid gap-5 md:grid-cols-2">
           <SectionItem
@@ -94,6 +121,7 @@ const AddHike = () => {
                 type="text"
                 placeholder="Enter name"
                 name="name"
+                value={inputs.name}
                 onChange={handleChange}
               />
             }
@@ -107,6 +135,7 @@ const AddHike = () => {
                 type="text"
                 placeholder="Enter description"
                 name="description"
+                value={inputs.description}
                 onChange={handleChange}
               />
             }
@@ -120,6 +149,7 @@ const AddHike = () => {
                 type="number"
                 placeholder="Enter elevation in meters"
                 name="elevation"
+                value={inputs.elevation}
                 onChange={handleChange}
               />
             }
@@ -133,6 +163,7 @@ const AddHike = () => {
                 type="number"
                 placeholder="Enter difficulty (out of 5)"
                 name="difficulty"
+                value={inputs.difficulty}
                 onChange={handleChange}
               />
             }
@@ -146,6 +177,7 @@ const AddHike = () => {
                 type="number"
                 placeholder="Enter duration"
                 name="duration"
+                value={inputs.duration}
                 onChange={handleChange}
               />
             }
@@ -154,14 +186,18 @@ const AddHike = () => {
           <SectionItem
             label={<div>Location</div>}
             body={
-              <Dropdown options={countriesList} onSelected={locationOnSelect} />
+              <Dropdown
+                initialValue={inputs.location}
+                options={countriesList}
+                onSelected={locationOnSelect}
+              />
             }
           />
           <SectionItem
             label="Upload Cover Image"
             body={
               <FileUpload
-                maxFiles={2}
+                maxFiles={1}
                 onFilesSelected={(file) => {
                   coverFileOnUpload(file[0]);
                 }}
@@ -173,7 +209,7 @@ const AddHike = () => {
             label="Upload Images"
             body={
               <FileUpload
-                maxFiles={10}
+                maxFiles={20}
                 onFilesSelected={(files) => {
                   fileOnUpload(files);
                 }}

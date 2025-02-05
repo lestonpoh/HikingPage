@@ -1,5 +1,7 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 interface Props {
   initialValue?: string;
@@ -43,6 +45,7 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
 
   const handleSelect = (value: string, e: any) => {
     e.stopPropagation();
+    console.log(selectedValue);
     setShowOptions(false);
     setSelectedValue(value);
     onSelected(value);
@@ -51,16 +54,19 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
   return (
     <div ref={dropdownRef} className="relative">
       <div
-        className={`dropdown ${
-          selectedValue ? "text-gray-900" : "text-gray-400"
-        } ${showOptions ? "dropdown-active" : ""}
-        }`}
+        className={`dropdown ${showOptions ? "dropdown-active" : ""}`}
         onClick={() => setShowOptions(!showOptions)}
       >
-        <div>{selectedValue ? selectedValue : "Select"}</div>
+        <div
+          className={`flex-1 ${
+            selectedValue ? "text-gray-900" : "text-gray-400"
+          }`}
+        >
+          {selectedValue ? selectedValue : "Select"}
+        </div>
         {selectedValue && (
           <div
-            className="mr-1 hover:scale-105"
+            className="mr-1 hover:scale-105 "
             onClick={(event) => {
               handleSelect("", event);
             }}
@@ -68,6 +74,7 @@ const Dropdown = ({ initialValue, options, onSelected }: Props) => {
             <CloseIcon />
           </div>
         )}
+        {showOptions ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
       </div>
 
       {showOptions && (

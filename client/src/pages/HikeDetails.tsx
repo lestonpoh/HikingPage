@@ -1,33 +1,13 @@
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/axiosInstance";
-import Input from "../components/Input";
-import SectionItem from "../components/SectionItem";
-import PostComment from "../components/comment/PostComment";
 import Comments from "../components/comment/Comments";
-
-interface HikeDetails {
-  id: number;
-  name: string;
-  description: string;
-  location: string;
-  elevation: number;
-  difficulty: number;
-  duration: number;
-  files: string[];
-}
-
-interface HikePhoto {
-  id: number;
-  url: string;
-}
+import { HikeDetail } from "../interface/HikeDetailsInterface";
 
 function HikeDetails() {
   const { name } = useParams();
-  const [photos, setPhotos] = useState<HikePhoto[]>([]);
-  const [details, setDetails] = useState<HikeDetails | null>(null);
+  const [details, setDetails] = useState<HikeDetail | null>(null);
 
-  // let hike = hikes.find((hike) => hike.name === name);
   useEffect(() => {
     axiosInstance
       .get("/hike/" + name)
@@ -37,17 +17,6 @@ function HikeDetails() {
       .catch((err) => {
         console.log(err);
       });
-
-    // axiosInstance
-    //   .get("https://jsonplaceholder.typicode.com/photos")
-    //   .then((res) =>
-    //     setPhotos(
-    //       res.data.slice(0, 30).map((element: any) => {
-    //         return { id: element.id, url: element.url };
-    //       })
-    //     )
-    //   )
-    //   .catch((error) => console.log(error));
   }, []);
 
   // if (!hike) {
@@ -98,18 +67,17 @@ function HikeDetails() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-block bg-blue-600 text-white font-bold px-4 py-1 text-xl">
           PHOTO GALLERY
         </div>
-        {!photos && <p>Loading...</p>}
         <div className="max-w-screen-lg py-10 px-8 m-auto flex flex-wrap gap-3">
-          {details?.files.map((file, i) => (
+          {details?.photos.map((photo, i) => (
             <img
               key={i}
               className="h-48 w-40"
-              src={`${import.meta.env.VITE_SERVER_UPLOADS_URL}/${file}`}
+              src={`${import.meta.env.VITE_SERVER_UPLOADS_URL}/${photo}`}
             ></img>
           ))}
         </div>
       </div>
-      <Comments id={details ? details.id : -1} />
+      <Comments id={details ? details.id : undefined} />
     </div>
   );
 }
