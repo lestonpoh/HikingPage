@@ -15,6 +15,7 @@ interface Props {
 
 interface User {
   username: string;
+  isAdmin: Boolean;
 }
 
 interface LoginInputs {
@@ -38,13 +39,13 @@ export const AuthContextProvider = ({ children }: Props) => {
     return axiosInstance
       .post("/auth/login", inputs)
       .then((res) => {
-        const { username } = res.data;
-        setCurrentUser(username);
+        const { username, isAdmin } = res.data;
+        setCurrentUser({ username, isAdmin });
       })
       .catch((err) => {
         setCookie("accessToken", "qqq", { path: "/" });
 
-        setCurrentUser({ username: "leston" });
+        setCurrentUser({ username: "leston", isAdmin: true });
 
         // throw err;
       });
@@ -73,7 +74,7 @@ export const AuthContextProvider = ({ children }: Props) => {
         })
         .catch((err) => {
           console.log(err);
-          setCurrentUser({ username: "lestdon" });
+          setCurrentUser({ username: "lestonpoh", isAdmin: false });
           setIsLoading(false);
         });
     } else {

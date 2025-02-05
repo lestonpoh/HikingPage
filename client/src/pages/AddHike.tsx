@@ -9,6 +9,9 @@ import { HikeDetail } from "../interface/HikeDetailsInterface";
 
 const AddHike = () => {
   const { name } = useParams();
+
+  const navigate = useNavigate();
+
   const [hikeName, setHikeName] = useState("");
 
   const [inputs, setInputs] = useState({
@@ -21,8 +24,6 @@ const AddHike = () => {
   });
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [coverFile, setCoverFile] = useState<File>();
-
-  const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputs((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -74,7 +75,7 @@ const AddHike = () => {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then((res) => {
+      .then(() => {
         navigate("/hike/" + inputs.name.split(" ").join("-").toLowerCase());
       })
       .catch((err) => {
@@ -111,7 +112,7 @@ const AddHike = () => {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then((res) => {
+      .then(() => {
         navigate("/hike/" + inputs.name.split(" ").join("-").toLowerCase());
       })
       .catch((err) => {
@@ -121,8 +122,11 @@ const AddHike = () => {
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    addHike();
+    if (name) {
+      addHike();
+    } else {
+      editHike();
+    }
   };
 
   useEffect(() => {

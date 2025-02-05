@@ -3,7 +3,6 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
-import postRoutes from "./routes/posts";
 import commentRoutes from "./routes/commentRoute";
 import hikeRoutes from "./routes/hikeRoute";
 import replyRoutes from "./routes/replyRoute";
@@ -26,7 +25,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/post", postRoutes);
 app.use("/api/comment", commentRoutes);
 app.use("/api/hike", hikeRoutes);
 app.use("/api/reply", replyRoutes);

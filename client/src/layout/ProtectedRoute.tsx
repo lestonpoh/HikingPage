@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children }: Props) => {
     return <div>Loading</div>;
   }
 
-  if (!isLoading && !currentUser) {
+  if (!isLoading && !currentUser?.isAdmin) {
     return <Navigate to="/login" />;
   }
 

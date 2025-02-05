@@ -3,8 +3,12 @@ import axiosInstance from "../services/axiosInstance";
 import Hike from "../components/Hike";
 import { HikeInterface } from "../interface/HikeInterface";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext";
 
 function Hikes() {
+  const { currentUser } = useContext(AuthContext);
+
   const { isPending, data } = useQuery<HikeInterface[]>({
     queryKey: ["hikes"],
     queryFn: () =>
@@ -34,12 +38,15 @@ function Hikes() {
             : data?.map((hike, i) => <Hike key={i} hike={hike} />)}
         </div>
       </div>
-      <button
-        onClick={addHikeOnClick}
-        className="button fixed bottom-6 right-6"
-      >
-        Add Hike
-      </button>
+
+      {currentUser && currentUser.isAdmin === true && (
+        <button
+          onClick={addHikeOnClick}
+          className="button fixed bottom-6 right-6"
+        >
+          Add Hike
+        </button>
+      )}
     </>
   );
 }
