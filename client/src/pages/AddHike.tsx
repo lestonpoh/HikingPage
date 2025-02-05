@@ -43,8 +43,7 @@ const AddHike = () => {
     setPhotoFiles(files);
   };
 
-  const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const addHike = () => {
     if (
       inputs.name === "" ||
       inputs.description === "" ||
@@ -81,6 +80,49 @@ const AddHike = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const editHike = () => {
+    if (
+      inputs.description === "" ||
+      inputs.elevation === "" ||
+      inputs.difficulty === "" ||
+      inputs.duration === "" ||
+      inputs.location === ""
+    ) {
+      alert("error");
+      return;
+    }
+
+    const formData = new FormData();
+    photoFiles.forEach((file) => formData.append("photoFiles", file));
+    if (coverFile) {
+      formData.append("coverFile", coverFile);
+    }
+    formData.append("description", inputs.description);
+    formData.append("location", inputs.location);
+    formData.append("elevation", inputs.elevation);
+    formData.append("difficulty", inputs.difficulty);
+    formData.append("duration", inputs.duration);
+
+    axiosInstance
+      .put("/hike/" + name, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((res) => {
+        navigate("/hike/" + inputs.name.split(" ").join("-").toLowerCase());
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    addHike();
   };
 
   useEffect(() => {
