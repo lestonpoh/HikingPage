@@ -74,7 +74,7 @@ export const AuthContextProvider = ({ children }: Props) => {
         })
         .catch((err) => {
           console.log(err);
-          setCurrentUser({ username: "lestonpoh", isAdmin: false });
+          setCurrentUser({ username: "lestonpoh", isAdmin: true });
           setIsLoading(false);
         });
     } else {

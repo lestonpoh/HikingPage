@@ -14,14 +14,20 @@ const Navbar = () => {
         HikingPage
       </NavLink>
 
-      <div className="flex-1 ">
-        <NavLink to="/hike">
-          {({ isActive }) => (
-            <div className={isActive ? "border-b-2 border-black" : ""}>
-              Hike
-            </div>
-          )}
-        </NavLink>
+      <div className="flex-1">
+        <div className="inline-block">
+          <NavLink to="/hike">
+            {({ isActive }) => (
+              <div
+                className={`box-border p-4 hover:shadow-[0_1px_0_0_rgba(0,0,0)] ${
+                  isActive ? "shadow-[0_1px_0_0_rgba(0,0,0)]" : ""
+                }`}
+              >
+                View all hikes
+              </div>
+            )}
+          </NavLink>
+        </div>
       </div>
 
       {currentUser ? (

@@ -250,6 +250,7 @@ export const updateHike = [
 
     db.query(getHikeIdQuery, [req.params.name], (err, data) => {
       if (err) return res.status(500).json(err);
+      if (!data || data.length === 0) return res.status(404).json("Not Found");
 
       const hikeId = data[0].id;
       const updateQuery =
@@ -324,3 +325,42 @@ export const updateHike = [
     });
   },
 ];
+
+export const deleteHike = (req: Request, res: Response) => {
+  const token = req.cookies.accessToken;
+  if (!token) {
+    res.status(401).json("Not logged in!");
+    return;
+  }
+
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET as string,
+    (err: any, userInfo: any) => {
+      if (err) return res.status(403).json("Token not valid");
+
+      const hikeId = req.params.id;
+
+      // Get all existing photos
+      const getHikePhotosQuery =
+        "SELECT fileName FROM photo WHERE photo.hikeId = ?";
+      const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
+      const deleteHikeQuery = "DELETE FROM hike WHERE id = ?";
+
+      db.query(getHikePhotosQuery, [hikeId], (err, data) => {
+        if (err) return res.status(500).json(err);
+        unlinkFiles(data.map((file: any) => file.filename));
+      });
+
+      // delete all photos from hike in db
+      db.query(deletePhotosQuery, [hikeId], (err, data) => {
+        if (err) return res.status(500).json(err);
+      });
+
+      // delete hiie
+      db.query(deleteHikeQuery, [hikeId], (err, data) => {
+        if (err) return res.status(500).json(err);
+      });
+    }
+  );
+};

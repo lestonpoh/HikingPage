@@ -11,8 +11,9 @@ const AddHike = () => {
   const { name } = useParams();
 
   const navigate = useNavigate();
-
+  const [isLoading, setIsLoading] = useState(true);
   const [hikeName, setHikeName] = useState("");
+  const [hikeId, setHikeId] = useState<number>();
 
   const [inputs, setInputs] = useState({
     name: "",
@@ -129,8 +130,22 @@ const AddHike = () => {
     }
   };
 
+  const deleteOnClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    axiosInstance
+      .delete("/hike/" + hikeId)
+      .then(() => {
+        navigate("/hike");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
+    console.log(name);
     if (name) {
+      console.log("hello");
       axiosInstance
         .get("/hike/" + name)
         .then((res) => {
@@ -144,18 +159,35 @@ const AddHike = () => {
             difficulty: hikeDetails.description,
             duration: hikeDetails.duration.toString(),
           });
+          setHikeId(hikeDetails.id);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);
+          navigate("/addhike");
+          setIsLoading(false);
         });
+    } else {
+      console.log("bye");
+      setIsLoading(false);
     }
   }, []);
 
-  return (
+  return isLoading ? (
+    <p>isLoading</p>
+  ) : (
     <div className="max-w-screen-lg mx-auto px-5 mt-10">
-      <h1 className="font-bold text-xl mb-6">
-        {name ? "Edit" + hikeName : "Add New Hike"}
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-bold text-xl mb-6">
+          {name ? "Edit" + hikeName : "Add New Hike"}
+        </h1>
+        {name && (
+          <button className="button" onClick={deleteOnClick}>
+            Delete
+          </button>
+        )}
+      </div>
+
       <form>
         <div className="grid gap-5 md:grid-cols-2">
           <SectionItem
@@ -264,7 +296,7 @@ const AddHike = () => {
             className="col-[1/3]"
           />
         </div>
-        <div className="flex justify-end mt-6">
+        <div className="flex justify-end my-6">
           <button className="button" onClick={submitOnClick}>
             Submit
           </button>
