@@ -8,7 +8,6 @@ import { AuthContext } from "../context/authContext";
 
 function Hikes() {
   const { currentUser } = useContext(AuthContext);
-
   const { isPending, data } = useQuery<HikeInterface[]>({
     queryKey: ["hikes"],
     queryFn: () =>

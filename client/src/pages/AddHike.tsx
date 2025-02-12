@@ -134,7 +134,7 @@ const AddHike = () => {
     e.preventDefault();
     axiosInstance
       .delete("/hike/" + hikeId)
-      .then(() => {
+      .then((data) => {
         navigate("/hike");
       })
       .catch((err) => {
@@ -143,9 +143,7 @@ const AddHike = () => {
   };
 
   useEffect(() => {
-    console.log(name);
     if (name) {
-      console.log("hello");
       axiosInstance
         .get("/hike/" + name)
         .then((res) => {
@@ -156,7 +154,7 @@ const AddHike = () => {
             description: hikeDetails.description,
             location: hikeDetails.location,
             elevation: hikeDetails.elevation.toString(),
-            difficulty: hikeDetails.description,
+            difficulty: hikeDetails.difficulty.toString(),
             duration: hikeDetails.duration.toString(),
           });
           setHikeId(hikeDetails.id);

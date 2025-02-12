@@ -33,7 +33,7 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthContextProvider = ({ children }: Props) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [cookies, setCookie] = useCookies(["accessToken"]);
+  const [cookies] = useCookies(["accessToken"]);
 
   const login = (inputs: LoginInputs) => {
     return axiosInstance
@@ -43,11 +43,7 @@ export const AuthContextProvider = ({ children }: Props) => {
         setCurrentUser({ username, isAdmin });
       })
       .catch((err) => {
-        setCookie("accessToken", "qqq", { path: "/" });
-
-        setCurrentUser({ username: "leston", isAdmin: true });
-
-        // throw err;
+        throw err;
       });
   };
 
@@ -72,9 +68,7 @@ export const AuthContextProvider = ({ children }: Props) => {
           setCurrentUser(res.data);
           setIsLoading(false);
         })
-        .catch((err) => {
-          console.log(err);
-          setCurrentUser({ username: "lestonpoh", isAdmin: true });
+        .catch(() => {
           setIsLoading(false);
         });
     } else {

@@ -82,7 +82,7 @@ export const getHikeDetails = (req: Request, res: Response) => {
 const unlinkFiles = (filenames: string[]) => {
   if (filenames) {
     filenames.forEach((filename) => {
-      fs.unlink("./src/uploads" + filename, (err) => {
+      fs.unlink("./src/uploads/" + filename, (err) => {
         if (err)
           console.error("Failed to delete file on validation failure", err);
       });
@@ -326,7 +326,7 @@ export const updateHike = [
   },
 ];
 
-export const deleteHike = (req: Request, res: Response) => {
+export const deleteHike = async (req: Request, res: Response) => {
   const token = req.cookies.accessToken;
   if (!token) {
     res.status(401).json("Not logged in!");
@@ -336,7 +336,7 @@ export const deleteHike = (req: Request, res: Response) => {
   jwt.verify(
     token,
     process.env.JWT_SECRET as string,
-    (err: any, userInfo: any) => {
+    async (err: any, userInfo: any) => {
       if (err) return res.status(403).json("Token not valid");
 
       const hikeId = req.params.id;
@@ -346,21 +346,51 @@ export const deleteHike = (req: Request, res: Response) => {
         "SELECT fileName FROM photo WHERE photo.hikeId = ?";
       const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
       const deleteHikeQuery = "DELETE FROM hike WHERE id = ?";
+      const getRepliesQuery =
+        "SELECT reply.id FROM comment INNER JOIN reply ON comment.id = reply.commentId WHERE comment.hikeId = ?";
+      const deleteReplyQuery = "DELETE FROM reply WHERE id = ?";
+      const deleteCommentQuery = "DELETE from comment WHERE hikeId=?";
 
-      db.query(getHikePhotosQuery, [hikeId], (err, data) => {
-        if (err) return res.status(500).json(err);
-        unlinkFiles(data.map((file: any) => file.filename));
-      });
+      // Promisified db query function
+      const queryPromise = (query: string, params: any[]) =>
+        new Promise<any>((resolve, reject) => {
+          db.query(query, params, (err, results) => {
+            if (err) reject(err);
+            resolve(results);
+          });
+        });
 
-      // delete all photos from hike in db
-      db.query(deletePhotosQuery, [hikeId], (err, data) => {
-        if (err) return res.status(500).json(err);
-      });
+      try {
+        // Get hike photos
+        const photos = await queryPromise(getHikePhotosQuery, [hikeId]);
+        unlinkFiles(photos.map((photo: any) => photo.fileName));
 
-      // delete hiie
-      db.query(deleteHikeQuery, [hikeId], (err, data) => {
-        if (err) return res.status(500).json(err);
-      });
+        // Delete all photos from hike in DB
+        await queryPromise(deletePhotosQuery, [hikeId]);
+
+        // Get replies and delete
+        const deleteReplies = async (hikeId: string) => {
+          const replies = await queryPromise(getRepliesQuery, [hikeId]);
+
+          // Delete each reply one by one
+          for (const row of replies) {
+            await queryPromise(deleteReplyQuery, [row.id]);
+          }
+        };
+
+        await deleteReplies(hikeId);
+
+        // delete comment
+        await queryPromise(deleteCommentQuery, [hikeId]);
+
+        // delete hike
+        await queryPromise(deleteHikeQuery, [hikeId]);
+
+        // Send success response
+        res.status(200).json("Hike deleted successfully");
+      } catch (err) {
+        console.log(err);
+      }
     }
   );
 };

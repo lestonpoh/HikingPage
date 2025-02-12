@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/axiosInstance";
 import Comments from "../components/comment/Comments";
@@ -7,6 +7,11 @@ import { HikeDetail } from "../interface/HikeDetailsInterface";
 function HikeDetails() {
   const { name } = useParams();
   const [details, setDetails] = useState<HikeDetail | null>(null);
+  const navigate = useNavigate();
+
+  const editOnClick = () => {
+    navigate("/addhike/" + name);
+  };
 
   useEffect(() => {
     axiosInstance
@@ -16,12 +21,9 @@ function HikeDetails() {
       })
       .catch((err) => {
         console.log(err);
+        navigate("/error");
       });
   }, []);
-
-  // if (!hike) {
-  //   return <Navigate to="/error" />;
-  // }
 
   return (
     <div>
@@ -30,7 +32,12 @@ function HikeDetails() {
         "Loading"
       ) : (
         <div className="max-w-screen-lg mx-auto mt-12 px-2">
-          <h1 className="font-bold text-5xl">{details.name}</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="font-bold text-5xl">{details.name}</h1>
+            <button className="button" onClick={editOnClick}>
+              Edit
+            </button>
+          </div>
 
           <div className=" bg-slate-200 rounded-lg py-2 px-5 my-10 mx-auto flex gap-11">
             <div className="flex flex-col gap-1">

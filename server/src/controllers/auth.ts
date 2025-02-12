@@ -73,7 +73,7 @@ export const login = [
         process.env.JWT_SECRET as string
       );
 
-      const { password, ...others } = data[0];
+      // const { password, ...others } = data[0];
 
       res
         .cookie("accessToken", token, {
@@ -81,7 +81,7 @@ export const login = [
           secure: process.env.NODE_ENV === "production",
         })
         .status(200)
-        .json(others);
+        .json({ username: data[0].username, isAdmin: !!data[0].isAdmin });
     });
   },
 ];
@@ -109,12 +109,14 @@ export const validateUser = (req: Request, res: Response) => {
     (err: any, userInfo: any) => {
       if (err) return res.status(403).json("Token not valid");
 
-      const q = "SELECT username FROM user WHERE id = ?";
+      const q = "SELECT username, isAdmin FROM user WHERE id = ?";
       db.query(q, [userInfo.id], (err, data) => {
         if (err) return res.status(500).json(err);
         if (data.length === 0) return res.status(404).json("User not found!");
 
-        return res.status(200).json(data[0].username);
+        return res
+          .status(200)
+          .json({ username: data[0].username, isAdmin: !!data[0].isAdmin });
       });
     }
   );

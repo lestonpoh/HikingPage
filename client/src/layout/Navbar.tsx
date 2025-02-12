@@ -32,11 +32,6 @@ const Navbar = () => {
 
       {currentUser ? (
         <div className="flex items-center gap-2">
-          <img
-            className="w-8 rounded-full"
-            src={"https://picsum.photos/200"}
-            alt="user profile image"
-          />
           <div className="flex flex-col">
             <Link
               to={`/profile/${currentUser?.username}`}
