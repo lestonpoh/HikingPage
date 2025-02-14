@@ -1,4 +1,4 @@
-import { db } from "../connect";
+import { dbConnection } from "../connect";
 import { Request, Response } from "express";
 import { body, query, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
@@ -32,25 +32,28 @@ const validateGetComments = [query("id").notEmpty().isInt()];
 
 export const getComments = [
   ...validateGetComments,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
       return;
     }
 
-    const q = `SELECT comment.id as comment_id, comment.description as comment_description, comment.createdAt as comment_createdAt, user.username as comment_username, reply.id as reply_id, reply.description as reply_description, reply.createdAt as reply_createdAt, user_reply.username as reply_username FROM comment
+    try {
+      const db = await dbConnection;
+      const getCommentsQuery = `SELECT comment.id as comment_id, comment.description as comment_description, comment.createdAt as comment_createdAt, user.username as comment_username, reply.id as reply_id, reply.description as reply_description, reply.createdAt as reply_createdAt, user_reply.username as reply_username FROM comment
         JOIN user ON comment.userId = user.id
         LEFT JOIN reply ON comment.id = reply.commentId
         LEFT JOIN user as user_reply ON reply.userId = user_reply.id
         WHERE comment.hikeId = (?)
         ORDER BY comment.createdAt DESC, reply.createdAt DESC`;
-    db.query(q, [req.query.id], (err, data: SQLCommentsOutput[]) => {
-      if (err) return res.status(500).json(err);
 
+      const [output] = await db.execute(getCommentsQuery, [req.query.id]);
+
+      const commentsData = output as SQLCommentsOutput[];
       const comments: MainCommentDetails[] = [];
 
-      data.forEach((row) => {
+      commentsData.forEach((row) => {
         let comment = comments.find((comment) => comment.id === row.comment_id);
 
         if (!comment) {
@@ -74,8 +77,12 @@ export const getComments = [
         }
       });
 
-      return res.status(200).json(comments);
-    });
+      res.status(200).json(comments);
+      return;
+    } catch (err) {
+      res.status(500).json(err);
+      return;
+    }
   },
 ];
 
@@ -87,7 +94,7 @@ const validateAddComment = [
 
 export const addComment = [
   ...validateAddComment,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
@@ -100,27 +107,35 @@ export const addComment = [
       return;
     }
 
-    jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-      (err: any, userInfo: any) => {
-        if (err) return res.status(403).json("Token not valid");
+    try {
+      const db = await dbConnection;
+      const userInfo: any = await jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      );
 
-        const q =
-          "INSERT INTO comment (`hikeId`,`userId`,`description`,`createdAt`) VALUES (?)";
-        const values = [
-          req.body.hikeId,
-          userInfo.id,
-          req.body.description,
-          moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-        ];
+      const insertCommentQuery =
+        "INSERT INTO comment (`hikeId`,`userId`,`description`,`createdAt`) VALUES (?,?,?,?)";
+      const values = [
+        req.body.hikeId,
+        userInfo.id,
+        req.body.description,
+        moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
+      ];
 
-        db.query(q, [values], (err, data) => {
-          if (err) return res.status(500).json(err);
+      await db.execute(insertCommentQuery, values);
 
-          return res.status(200).json("Comment has been created");
-        });
+      res.status(200).json("Comment added");
+      return;
+    } catch (err: any) {
+      console.log(err);
+      if (err.name === "JsonWebTokenError") {
+        res.status(403).json("Token not valid");
+        return;
+      } else {
+        res.status(500).json(err);
+        return;
       }
-    );
+    }
   },
 ];

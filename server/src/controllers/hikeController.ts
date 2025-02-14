@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { db } from "../connect";
+import { dbConnection } from "../connect";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import moment from "moment";
@@ -37,35 +37,45 @@ interface HikeDetails {
   coverPhoto?: string;
 }
 
-export const getHikes = (req: Request, res: Response) => {
-  const q =
-    "SELECT hike.id, name, location, elevation ,difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true ORDER BY createdAt DESC";
-  db.query(q, (err, data) => {
-    if (err) return res.status(500).json(err);
+export const getHikes = async (req: Request, res: Response) => {
+  try {
+    const db = await dbConnection;
+    const getHikesQuery =
+      "SELECT hike.id, name, location, elevation ,difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true ORDER BY createdAt DESC";
+    const [hikeData] = await (await db).execute(getHikesQuery);
 
-    return res.status(200).json(data);
-  });
+    res.status(200).json(hikeData);
+    return;
+  } catch (err) {
+    res.status(500).json(err);
+    return;
+  }
 };
 
-export const getHikeDetails = (req: Request, res: Response) => {
-  const q =
-    "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName, isCover FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = false WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
-  db.query(q, [req.params.name], (err, data: SQLHikeOutput[]) => {
-    if (err) return res.status(500).json(err);
-    if (!data || data.length === 0) return res.status(404).json("Not Found");
+export const getHikeDetails = async (req: Request, res: Response) => {
+  try {
+    const db = await dbConnection;
+    const getHikeDetailsQuery =
+      "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName, isCover FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = false WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
+    const [data] = await db.execute(getHikeDetailsQuery, [req.params.name]);
+    const hikeDetails = data as SQLHikeOutput[];
+    if (!hikeDetails || hikeDetails.length === 0) {
+      res.status(404).json("Not Found");
+      return;
+    }
 
     const output: HikeDetails = {
-      id: data[0].id,
-      name: data[0].name,
-      description: data[0].description,
-      location: data[0].location,
-      elevation: data[0].elevation,
-      difficulty: data[0].difficulty,
-      duration: data[0].duration,
+      id: hikeDetails[0].id,
+      name: hikeDetails[0].name,
+      description: hikeDetails[0].description,
+      location: hikeDetails[0].location,
+      elevation: hikeDetails[0].elevation,
+      difficulty: hikeDetails[0].difficulty,
+      duration: hikeDetails[0].duration,
       photos: [],
     };
 
-    data.forEach((row) => {
+    hikeDetails.forEach((row) => {
       if (row.fileName) {
         if (row.isCover) {
           output.coverPhoto = row.fileName;
@@ -75,8 +85,12 @@ export const getHikeDetails = (req: Request, res: Response) => {
       }
     });
 
-    return res.status(200).json(output);
-  });
+    res.status(200).json(output);
+    return;
+  } catch (err) {
+    res.status(500).json(err);
+    return;
+  }
 };
 
 const unlinkFiles = (filenames: string[]) => {
@@ -101,50 +115,52 @@ const validateAddHike = [
 ];
 
 export const addHike = [
-  (req: RequestCustom, res: Response, next: NextFunction) => {
+  async (req: RequestCustom, res: Response, next: NextFunction) => {
     const token = req.cookies.accessToken;
     if (!token) {
       res.status(401).json("Not logged in!");
       return;
     }
 
-    jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-      (err: any, userInfo: any) => {
-        if (err) return res.status(403).json("Token not valid");
-
-        req.userInfo = userInfo;
-        next();
-      }
-    );
+    try {
+      const userInfo: any = jwt.verify(token, process.env.JWT_SECRET as string);
+      req.userInfo = userInfo;
+      next();
+    } catch (err: any) {
+      res.status(403).json("Token not valid");
+      return;
+    }
   },
   multerUpload.fields([
     { name: "coverFile", maxCount: 1 },
     { name: "photoFiles" },
   ]),
   ...validateAddHike,
-  (req: RequestCustom, res: Response) => {
-    const allFiles = req.files as Express.Multer.File[];
+  async (req: RequestCustom, res: Response) => {
+    const files = req.files as { [key: string]: Express.Multer.File[] };
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      unlinkFiles(allFiles.map((file) => file.filename));
+      unlinkFiles(files.coverFile.map((file) => file.filename));
+      unlinkFiles(files.photoFiles.map((file) => file.filename));
       res.status(400).json({ errors: errors.array() });
       return;
     }
 
-    const checkHikeNameQuery = "SELECT id FROM hike WHERE hike.name = (?)";
-
-    db.query(checkHikeNameQuery, [req.body.name], (err, data) => {
-      if (err) return res.status(500).json(err);
-      if (data.length) {
-        unlinkFiles(allFiles.map((file) => file.filename));
-        return res.status(409).json("Name already exist!");
+    try {
+      const db = await dbConnection;
+      const checkHikeNameQuery = "SELECT id FROM hike WHERE hike.name = (?)";
+      const [checkHikeNameData]: any = await db.execute(checkHikeNameQuery, [
+        req.body.name,
+      ]);
+      if (checkHikeNameData.length) {
+        unlinkFiles(files.coverFile.map((file) => file.filename));
+        unlinkFiles(files.photoFiles.map((file) => file.filename));
+        res.status(409).json("Name already exist!");
+        return;
       }
 
-      const q =
-        "INSERT INTO hike (`userId`,`name`,`description`, `location`, `elevation`, `difficulty`, `duration`,`createdAt`) VALUES (?)";
-
+      const insertHikeQuery =
+        "INSERT INTO hike (`userId`,`name`,`description`, `location`, `elevation`, `difficulty`, `duration`,`createdAt`) VALUES (?,?,?,?,?,?,?,?)";
       const values = [
         req.userInfo.id,
         req.body.name,
@@ -156,51 +172,39 @@ export const addHike = [
         moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
       ];
 
-      db.query(q, [values], (err, data) => {
-        if (err) return res.status(500).json(err);
+      const [insertHikeData]: any = await db.execute(insertHikeQuery, values);
+      const hikeId = insertHikeData.insertId;
 
-        const hikeId = data.insertId;
+      if (!req.files || req.files.length === 0) {
+        res.status(200).json("Hike has been created with no files");
+        return;
+      }
 
-        if (!req.files || req.files.length === 0) {
-          return res.status(200).json("Hike has been created with no files");
-        }
+      if (files.coverFile) {
+        const coverFileName = files.coverFile[0].filename;
+        const coverQuery =
+          "INSERT INTO photo (`hikeId`,`fileName`,`isCover`) VALUES (?,?,?)";
+        const coverValues = [hikeId, coverFileName, true];
 
-        const files = req.files as { [key: string]: Express.Multer.File[] };
+        await db.execute(coverQuery, coverValues);
+      }
 
-        let hasError: Boolean = false;
+      if (files.photoFiles) {
+        files.photoFiles.forEach(async (file) => {
+          const fileName = file.filename;
+          const photoQuery =
+            "INSERT INTO photo (`hikeId`, `fileName`, `isCover`) VALUES (?,?,?)";
+          const photoValues = [hikeId, fileName, false];
+          await db.execute(photoQuery, photoValues);
+        });
+      }
 
-        if (files.coverFile) {
-          const coverFileName = files.coverFile[0].filename;
-          const coverQuery =
-            "INSERT INTO photo (`hikeId`,`fileName`,'isCover') VALUES (?)";
-          const coverValues = [hikeId, coverFileName, true];
-
-          db.query(coverQuery, [coverValues], (err) => {
-            if (err) {
-              hasError = true;
-            }
-          });
-        }
-
-        if (files.photoFiles) {
-          files.photoFiles.forEach((file) => {
-            const fileName = file.filename;
-            const photoQuery =
-              "INSERT INTO photo (`hikeId`, `fileName`, `isCover`) VALUES (?)";
-            const photoValues = [hikeId, fileName, false];
-
-            db.query(photoQuery, [photoValues], (err) => {
-              if (err) {
-                hasError = true;
-              }
-            });
-          });
-        }
-
-        if (!hasError)
-          return res.status(200).json("Hike has been created with files");
-      });
-    });
+      res.status(200).json("Hike has been created with files");
+      return;
+    } catch (err) {
+      res.status(500).json(err);
+      return;
+    }
   },
 ];
 
@@ -214,47 +218,52 @@ const validateUpdateHike = [
 ];
 
 export const updateHike = [
-  (req: RequestCustom, res: Response, next: NextFunction) => {
+  async (req: RequestCustom, res: Response, next: NextFunction) => {
     const token = req.cookies.accessToken;
     if (!token) {
       res.status(401).json("Not logged in!");
       return;
     }
 
-    jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-      (err: any, userInfo: any) => {
-        if (err) return res.status(403).json("Token not valid");
+    try {
+      const userInfo: any = jwt.verify(token, process.env.JWT_SECRET as string);
 
-        req.userInfo = userInfo;
-        next();
-      }
-    );
+      req.userInfo = userInfo;
+      next();
+    } catch (err: any) {
+      res.status(403).json("Token not valid");
+      return;
+    }
   },
   multerUpload.fields([
     { name: "coverFile", maxCount: 1 },
     { name: "photoFiles" },
   ]),
-  ...validateAddHike,
-  (req: RequestCustom, res: Response) => {
+  ...validateUpdateHike,
+  async (req: RequestCustom, res: Response) => {
     const allFiles = req.files as Express.Multer.File[];
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      unlinkFiles(allFiles.map((file) => file.filename));
+      // unlinkFiles(allFiles.map((file) => file.filename));
       res.status(400).json({ errors: errors.array() });
       return;
     }
 
-    const getHikeIdQuery = "SELECT id FROM hike WHERE hike.name = (?)";
+    try {
+      const db = await dbConnection;
+      const getHikeIdQuery = "SELECT id FROM hike WHERE hike.name = (?)";
+      const [hikeIdData]: any = await db.execute(getHikeIdQuery, [
+        req.params.name,
+      ]);
+      if (!hikeIdData || hikeIdData.length === 0) {
+        res.status(404).json("Not Found");
+        return;
+      }
 
-    db.query(getHikeIdQuery, [req.params.name], (err, data) => {
-      if (err) return res.status(500).json(err);
-      if (!data || data.length === 0) return res.status(404).json("Not Found");
+      const hikeId = hikeIdData[0].id;
 
-      const hikeId = data[0].id;
       const updateQuery =
-        "UPDATE hike SET `description=?`, `location=?`, `elevation=?`, `difficulty=?`, `duration=?`) WHERE id = ?";
+        "UPDATE hike SET `description`=?, `location`=?, `elevation`=?, `difficulty`=?, `duration`=? WHERE id = ?";
 
       const values = [
         req.body.description,
@@ -265,64 +274,55 @@ export const updateHike = [
         hikeId,
       ];
 
-      db.query(updateQuery, [values], (err, data) => {
-        if (err) return res.status(500).json(err);
+      await db.execute(updateQuery, values);
 
-        // Get all existing photos
-        const getHikePhotosQuery =
-          "SELECT fileName FROM photo WHERE photo.hikeId = ?";
-        const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
+      // Get all existing photos
+      const getHikePhotosQuery =
+        "SELECT fileName FROM photo WHERE photo.hikeId = ?";
 
-        db.query(getHikePhotosQuery, [hikeId], (err, data) => {
-          if (err) return res.status(500).json(err);
-          unlinkFiles(data.map((file: any) => file.filename));
+      const [hikePhotosData]: any = await db.execute(getHikePhotosQuery, [
+        hikeId,
+      ]);
+      unlinkFiles(hikePhotosData.map((file: any) => file.filename));
+
+      // delete all photos from hike in db
+      const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
+      await db.execute(deletePhotosQuery, [hikeId]);
+
+      if (!req.files || req.files.length === 0) {
+        res.status(200).json("Hike has been created with no files");
+        return;
+      }
+
+      const files = req.files as { [key: string]: Express.Multer.File[] };
+
+      if (files.coverFile) {
+        const coverFileName = files.coverFile[0].filename;
+        const coverQuery =
+          "INSERT INTO photo (`hikeId`,`fileName`,`isCover`) VALUES (?,?,?)";
+        const coverValues = [hikeId, coverFileName, true];
+
+        await db.execute(coverQuery, coverValues);
+      }
+
+      if (files.photoFiles) {
+        files.photoFiles.forEach(async (file) => {
+          const fileName = file.filename;
+          const photoQuery =
+            "INSERT INTO photo (`hikeId`, `fileName`, `isCover`) VALUES (?,?,?)";
+          const photoValues = [hikeId, fileName, false];
+
+          await db.execute(photoQuery, photoValues);
         });
+      }
 
-        // delete all photos from hike in db
-        db.query(deletePhotosQuery, [hikeId], (err, data) => {
-          if (err) return res.status(500).json(err);
-        });
-
-        if (!req.files || req.files.length === 0) {
-          return res.status(200).json("Hike has been created with no files");
-        }
-
-        const files = req.files as { [key: string]: Express.Multer.File[] };
-
-        let hasError: Boolean = false;
-
-        if (files.coverFile) {
-          const coverFileName = files.coverFile[0].filename;
-          const coverQuery =
-            "INSERT INTO photo (`hikeId`,`fileName`,'isCover') VALUES (?)";
-          const coverValues = [hikeId, coverFileName, true];
-
-          db.query(coverQuery, [coverValues], (err) => {
-            if (err) {
-              hasError = true;
-            }
-          });
-        }
-
-        if (files.photoFiles) {
-          files.photoFiles.forEach((file) => {
-            const fileName = file.filename;
-            const photoQuery =
-              "INSERT INTO photo (`hikeId`, `fileName`, `isCover`) VALUES (?)";
-            const photoValues = [hikeId, fileName, false];
-
-            db.query(photoQuery, [photoValues], (err) => {
-              if (err) {
-                hasError = true;
-              }
-            });
-          });
-        }
-
-        if (!hasError)
-          return res.status(200).json("Hike has been created with files");
-      });
-    });
+      res.status(200).json("Hike has been created with files");
+      return;
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+      return;
+    }
   },
 ];
 
@@ -333,64 +333,51 @@ export const deleteHike = async (req: Request, res: Response) => {
     return;
   }
 
-  jwt.verify(
-    token,
-    process.env.JWT_SECRET as string,
-    async (err: any, userInfo: any) => {
-      if (err) return res.status(403).json("Token not valid");
+  try {
+    const db = await dbConnection;
+    await jwt.verify(token, process.env.JWT_SECRET as string);
 
-      const hikeId = req.params.id;
+    const hikeId = req.params.id;
 
-      // Get all existing photos
-      const getHikePhotosQuery =
-        "SELECT fileName FROM photo WHERE photo.hikeId = ?";
-      const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
-      const deleteHikeQuery = "DELETE FROM hike WHERE id = ?";
-      const getRepliesQuery =
-        "SELECT reply.id FROM comment INNER JOIN reply ON comment.id = reply.commentId WHERE comment.hikeId = ?";
-      const deleteReplyQuery = "DELETE FROM reply WHERE id = ?";
-      const deleteCommentQuery = "DELETE from comment WHERE hikeId=?";
+    // Get all existing photos
+    const getHikePhotosQuery =
+      "SELECT fileName FROM photo WHERE photo.hikeId = ?";
+    const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
+    const deleteHikeQuery = "DELETE FROM hike WHERE id = ?";
+    const getRepliesQuery =
+      "SELECT reply.id FROM comment INNER JOIN reply ON comment.id = reply.commentId WHERE comment.hikeId = ?";
+    const deleteReplyQuery = "DELETE FROM reply WHERE id = ?";
+    const deleteCommentQuery = "DELETE from comment WHERE hikeId=?";
 
-      // Promisified db query function
-      const queryPromise = (query: string, params: any[]) =>
-        new Promise<any>((resolve, reject) => {
-          db.query(query, params, (err, results) => {
-            if (err) reject(err);
-            resolve(results);
-          });
-        });
+    const [photos]: any = await db.execute(getHikePhotosQuery, [hikeId]);
+    unlinkFiles(photos.map((photo: any) => photo.fileName));
 
-      try {
-        // Get hike photos
-        const photos = await queryPromise(getHikePhotosQuery, [hikeId]);
-        unlinkFiles(photos.map((photo: any) => photo.fileName));
+    // Delete all photos from hike in DB
+    await db.execute(deletePhotosQuery, [hikeId]);
 
-        // Delete all photos from hike in DB
-        await queryPromise(deletePhotosQuery, [hikeId]);
-
-        // Get replies and delete
-        const deleteReplies = async (hikeId: string) => {
-          const replies = await queryPromise(getRepliesQuery, [hikeId]);
-
-          // Delete each reply one by one
-          for (const row of replies) {
-            await queryPromise(deleteReplyQuery, [row.id]);
-          }
-        };
-
-        await deleteReplies(hikeId);
-
-        // delete comment
-        await queryPromise(deleteCommentQuery, [hikeId]);
-
-        // delete hike
-        await queryPromise(deleteHikeQuery, [hikeId]);
-
-        // Send success response
-        res.status(200).json("Hike deleted successfully");
-      } catch (err) {
-        console.log(err);
-      }
+    // Get replies and delete
+    const [replies]: any = await db.execute(getRepliesQuery, [hikeId]);
+    // Delete each reply one by one
+    for (const row of replies) {
+      await db.execute(deleteReplyQuery, [row.id]);
     }
-  );
+
+    // delete comment
+    await db.execute(deleteCommentQuery, [hikeId]);
+
+    // delete hike
+    await db.execute(deleteHikeQuery, [hikeId]);
+
+    // Send success response
+    res.status(200).json("Hike deleted successfully");
+    return;
+  } catch (err: any) {
+    if (err.name === "JsonWebTokenError") {
+      res.status(403).json("Token not valid");
+      return;
+    } else {
+      res.status(500).json(err);
+      return;
+    }
+  }
 };

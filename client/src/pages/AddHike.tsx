@@ -123,7 +123,9 @@ const AddHike = () => {
 
   const submitOnClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (name) {
+
+    if (name == undefined) {
+      console.log(name);
       addHike();
     } else {
       editHike();
@@ -166,7 +168,6 @@ const AddHike = () => {
           setIsLoading(false);
         });
     } else {
-      console.log("bye");
       setIsLoading(false);
     }
   }, []);
@@ -199,6 +200,7 @@ const AddHike = () => {
                 name="name"
                 value={inputs.name}
                 onChange={handleChange}
+                disabled={name !== undefined}
               />
             }
           />

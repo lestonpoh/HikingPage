@@ -41,6 +41,9 @@ const Comments = ({ id }: Props) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments"] });
     },
+    onError: (err) => {
+      console.log(err);
+    },
   });
 
   const postComment = (comment: string) => {
