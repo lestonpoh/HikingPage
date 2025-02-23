@@ -28,7 +28,7 @@ const MainComment = ({
       return axiosInstance.post("/reply", newComment);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.invalidateQueries({ queryKey: ["hikeDetails"] });
       hideReplyInput();
     },
   });
@@ -37,7 +37,10 @@ const MainComment = ({
     if (newComment.length === 0) {
       alert("error");
     }
-    mutation.mutate({ commentId: comment.id, description: newComment });
+    mutation.mutate({
+      commentId: comment.id as number,
+      description: newComment,
+    });
   };
 
   return (
@@ -60,8 +63,8 @@ const MainComment = ({
 
       {comment.replies.length > 0 && (
         <ul className="pl-7">
-          {comment.replies.map((reply) => (
-            <li key={reply.id} className="border-b border-gray-200 py-2">
+          {comment.replies.map((reply, i) => (
+            <li key={i} className="border-b border-gray-200 py-2">
               <Comment comment={reply}></Comment>
             </li>
           ))}

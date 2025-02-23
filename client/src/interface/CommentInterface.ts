@@ -1,5 +1,5 @@
 export interface CommentDetails {
-  id: number;
+  id?: number;
   username: string;
   description: string;
   createdAt: string;

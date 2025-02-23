@@ -1,3 +1,5 @@
+import { MainCommentDetails } from "./CommentInterface";
+
 export interface HikeDetail {
   id: number;
   name: string;
@@ -7,5 +9,5 @@ export interface HikeDetail {
   difficulty: number;
   duration: number;
   photos: string[];
-  coverPhoto: string;
+  comments: MainCommentDetails[];
 }

@@ -7,7 +7,8 @@ import { MainCommentDetails } from "../../interface/CommentInterface";
 import MainComment from "./MainComment";
 
 interface Props {
-  id?: number;
+  hikeId: number;
+  comments: MainCommentDetails[];
 }
 
 interface PostCommentInput {
@@ -15,22 +16,7 @@ interface PostCommentInput {
   description: string;
 }
 
-const Comments = ({ id }: Props) => {
-  const { isPending, data } = useQuery<MainCommentDetails[]>({
-    queryKey: ["comments", id],
-    queryFn: () =>
-      axiosInstance
-        .get("/comment", { params: { id } })
-        .then((res) => {
-          return res.data;
-        })
-        .catch((err) => {
-          console.log(err);
-          throw err;
-        }),
-    enabled: !!id,
-  });
-
+const Comments = ({ hikeId, comments }: Props) => {
   const [replyIndex, setReplyIndex] = useState<number>();
 
   const queryClient = useQueryClient();
@@ -39,7 +25,7 @@ const Comments = ({ id }: Props) => {
       return axiosInstance.post("/comment", newComment);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comments"] });
+      queryClient.invalidateQueries({ queryKey: ["hikeDetails"] });
     },
     onError: (err) => {
       console.log(err);
@@ -50,46 +36,41 @@ const Comments = ({ id }: Props) => {
     if (comment.length === 0) {
       alert("error");
     }
-    mutation.mutate({ hikeId: id as number, description: comment });
+    mutation.mutate({ hikeId: hikeId, description: comment });
   };
 
   return (
     <div className="max-w-screen-lg mx-auto mt-12 px-2">
       <h3 className="font-bold text-4xl pb-2">COMMENTS</h3>
-      {isPending ? (
-        <div>Loading</div>
-      ) : (
+      {comments && comments.length > 0 && (
         <div className="mt-2 mb-14 flex flex-col gap-4">
-          {data && data.length > 0 && (
-            <ul>
-              {data.map((comment, i) => (
-                <li key={i}>
-                  <MainComment
-                    comment={comment}
-                    showReplyInput={replyIndex === i}
-                    replyOnClick={() => setReplyIndex(i)}
-                    hideReplyInput={() => {
-                      setReplyIndex(-1);
-                    }}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {replyIndex == -1 ? (
-            <PostComment postComment={postComment} isReply={false} />
-          ) : (
-            <a
-              onClick={() => {
-                setReplyIndex(-1);
-              }}
-              className="cursor-pointer text-blue-400 hover:text-blue-500 text-sm"
-            >
-              Leave a comment
-            </a>
-          )}
+          <ul>
+            {comments.map((comment, i) => (
+              <li key={i}>
+                <MainComment
+                  comment={comment}
+                  showReplyInput={replyIndex === i}
+                  replyOnClick={() => setReplyIndex(i)}
+                  hideReplyInput={() => {
+                    setReplyIndex(-1);
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
+      {replyIndex == -1 ? (
+        <PostComment postComment={postComment} isReply={false} />
+      ) : (
+        <a
+          onClick={() => {
+            setReplyIndex(-1);
+          }}
+          className="cursor-pointer text-blue-400 hover:text-blue-500 text-sm"
+        >
+          Leave a comment
+        </a>
       )}
     </div>
   );
