@@ -35,13 +35,36 @@ interface HikeDetails {
   duration: number;
   photos: string[];
   coverPhoto?: string;
+  comments?: MainCommentDetails[];
+}
+
+interface CommentDetails {
+  id?: number;
+  username: string;
+  description: string;
+  createdAt: string;
+}
+
+interface MainCommentDetails extends CommentDetails {
+  replies: CommentDetails[];
+}
+
+interface SQLCommentsOutput {
+  comment_id: number;
+  comment_description: string;
+  comment_createdAt: string;
+  comment_username: string;
+  reply_id: number;
+  reply_description: string;
+  reply_createdAt: string;
+  reply_username: string;
 }
 
 export const getHikes = async (req: Request, res: Response) => {
   try {
     const db = await dbConnection;
     const getHikesQuery =
-      "SELECT hike.id, name, location, elevation ,difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true ORDER BY createdAt DESC";
+      "SELECT name, location, elevation ,difficulty, duration, fileName FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = true ORDER BY createdAt DESC";
     const [hikeData] = await (await db).execute(getHikesQuery);
 
     res.status(200).json(hikeData);
@@ -57,8 +80,8 @@ export const getHikeDetails = async (req: Request, res: Response) => {
     const db = await dbConnection;
     const getHikeDetailsQuery =
       "SELECT hike.id, name, description, location, elevation, difficulty, duration, fileName, isCover FROM hike LEFT JOIN photo ON hike.id = photo.hikeId AND photo.isCover = false WHERE REPLACE(LOWER(name), ' ', '-') = (?)";
-    const [data] = await db.execute(getHikeDetailsQuery, [req.params.name]);
-    const hikeDetails = data as SQLHikeOutput[];
+    const [hikeData] = await db.execute(getHikeDetailsQuery, [req.params.name]);
+    const hikeDetails = hikeData as SQLHikeOutput[];
     if (!hikeDetails || hikeDetails.length === 0) {
       res.status(404).json("Not Found");
       return;
@@ -73,6 +96,7 @@ export const getHikeDetails = async (req: Request, res: Response) => {
       difficulty: hikeDetails[0].difficulty,
       duration: hikeDetails[0].duration,
       photos: [],
+      comments: [],
     };
 
     hikeDetails.forEach((row) => {
@@ -84,6 +108,45 @@ export const getHikeDetails = async (req: Request, res: Response) => {
         }
       }
     });
+
+    const getCommentsQuery = `SELECT comment.id as comment_id, comment.description as comment_description, comment.createdAt as comment_createdAt, user.username as comment_username, reply.id as reply_id, reply.description as reply_description, reply.createdAt as reply_createdAt, user_reply.username as reply_username FROM comment
+            JOIN user ON comment.userId = user.id
+            LEFT JOIN reply ON comment.id = reply.commentId
+            LEFT JOIN user as user_reply ON reply.userId = user_reply.id
+            WHERE comment.hikeId = (?)
+            ORDER BY comment.createdAt DESC, reply.createdAt DESC`;
+
+    const [commentOutput] = await db.execute(getCommentsQuery, [
+      hikeDetails[0].id,
+    ]);
+
+    const commentsData = commentOutput as SQLCommentsOutput[];
+    const comments: MainCommentDetails[] = [];
+
+    commentsData.forEach((row) => {
+      let comment = comments.find((comment) => comment.id === row.comment_id);
+
+      if (!comment) {
+        comment = {
+          id: row.comment_id,
+          username: row.comment_username,
+          description: row.comment_description,
+          createdAt: row.comment_createdAt,
+          replies: [],
+        };
+        comments.push(comment);
+      }
+
+      if (row.reply_id) {
+        comment.replies.push({
+          username: row.reply_username,
+          description: row.reply_description,
+          createdAt: row.reply_createdAt,
+        });
+      }
+    });
+
+    output.comments = comments;
 
     res.status(200).json(output);
     return;
