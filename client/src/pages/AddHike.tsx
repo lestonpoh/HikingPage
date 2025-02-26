@@ -63,7 +63,7 @@ const AddHike = () => {
     if (coverFile) {
       formData.append("coverFile", coverFile);
     }
-    formData.append("name", inputs.name);
+    formData.append("name", inputs.name.trim());
     formData.append("description", inputs.description);
     formData.append("location", inputs.location);
     formData.append("elevation", inputs.elevation);
@@ -77,7 +77,9 @@ const AddHike = () => {
         },
       })
       .then(() => {
-        navigate("/hike/" + inputs.name.split(" ").join("-").toLowerCase());
+        navigate(
+          "/hike/" + inputs.name.trim().split(" ").join("-").toLowerCase()
+        );
       })
       .catch((err) => {
         console.log(err);
@@ -108,13 +110,15 @@ const AddHike = () => {
     formData.append("duration", inputs.duration);
 
     axiosInstance
-      .put("/hike/" + name, formData, {
+      .put("/hike/" + inputs.name, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
       .then(() => {
-        navigate("/hike/" + inputs.name.split(" ").join("-").toLowerCase());
+        navigate(
+          "/hike/" + inputs.name.trim().split(" ").join("-").toLowerCase()
+        );
       })
       .catch((err) => {
         console.log(err);

@@ -290,7 +290,6 @@ export const updateHike = [
 
     try {
       const userInfo: any = jwt.verify(token, process.env.JWT_SECRET as string);
-
       req.userInfo = userInfo;
       next();
     } catch (err: any) {
@@ -304,10 +303,12 @@ export const updateHike = [
   ]),
   ...validateUpdateHike,
   async (req: RequestCustom, res: Response) => {
-    const allFiles = req.files as Express.Multer.File[];
+    const files = req.files as { [key: string]: Express.Multer.File[] };
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      // unlinkFiles(allFiles.map((file) => file.filename));
+      unlinkFiles(files.coverFile.map((file) => file.filename));
+      unlinkFiles(files.photoFiles.map((file) => file.filename));
       res.status(400).json({ errors: errors.array() });
       return;
     }
@@ -346,7 +347,8 @@ export const updateHike = [
       const [hikePhotosData]: any = await db.execute(getHikePhotosQuery, [
         hikeId,
       ]);
-      unlinkFiles(hikePhotosData.map((file: any) => file.filename));
+
+      unlinkFiles(hikePhotosData.map((file: any) => file.fileName));
 
       // delete all photos from hike in db
       const deletePhotosQuery = "DELETE FROM photo WHERE hikeId = ?";
@@ -413,7 +415,8 @@ export const deleteHike = async (req: Request, res: Response) => {
     const deleteCommentQuery = "DELETE from comment WHERE hikeId=?";
 
     const [photos]: any = await db.execute(getHikePhotosQuery, [hikeId]);
-    unlinkFiles(photos.map((photo: any) => photo.fileName));
+    console.log(photos);
+    unlinkFiles(photos.map((file: any) => file.fileName));
 
     // Delete all photos from hike in DB
     await db.execute(deletePhotosQuery, [hikeId]);
