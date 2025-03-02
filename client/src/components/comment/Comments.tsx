@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PostComment from "./PostComment";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../../services/axiosInstance";
 
 import { MainCommentDetails } from "../../interface/CommentInterface";

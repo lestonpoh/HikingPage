@@ -1,5 +1,4 @@
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../services/axiosInstance";
 import Comments from "../components/comment/Comments";
 import { HikeDetail } from "../interface/HikeDetailsInterface";

@@ -140,7 +140,7 @@ const AddHike = () => {
     e.preventDefault();
     axiosInstance
       .delete("/hike/" + hikeId)
-      .then((data) => {
+      .then(() => {
         navigate("/hike");
       })
       .catch((err) => {
