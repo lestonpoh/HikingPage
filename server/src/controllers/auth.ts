@@ -40,11 +40,12 @@ export const register = [
       const hashedPassword = bcrypt.hashSync(req.body.password, salt);
 
       const insertUserQuery =
-        "INSERT INTO user (`username`,`email`,`password`) VALUES (?)";
+        "INSERT INTO user (`username`,`email`,`password`,`isAdmin`) VALUES (?,?,?,?)";
       await db.execute(insertUserQuery, [
         req.body.username,
         req.body.email,
         hashedPassword,
+        1,
       ]);
       res.status(200).json("User has been created.");
       return;
