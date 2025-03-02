@@ -98,6 +98,7 @@ export const login = [
       res
         .cookie("accessToken", token, {
           // httpOnly: true,
+          sameSite: "none",
           secure: process.env.NODE_ENV === "production",
         })
         .status(200)
