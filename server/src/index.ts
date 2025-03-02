@@ -1,11 +1,11 @@
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import authRoutes from "../routes/auth";
-import userRoutes from "../routes/users";
-import commentRoutes from "../routes/commentRoute";
-import hikeRoutes from "../routes/hikeRoute";
-import replyRoutes from "../routes/replyRoute";
+import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
+import commentRoutes from "./routes/commentRoute";
+import hikeRoutes from "./routes/hikeRoute";
+import replyRoutes from "./routes/replyRoute";
 const path = require("path");
 import dotenv from "dotenv";
 dotenv.config();
@@ -30,10 +30,10 @@ app.use("/api/hike", hikeRoutes);
 app.use("/api/reply", replyRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// const port = process.env.PORT;
+const port = process.env.PORT;
 
-// app.listen(port, () => {
-//   console.log(`Server running - listening on port ${port}!`);
-// });
+app.listen(port, () => {
+  console.log(`Server running - listening on port ${port}!`);
+});
 
 export default app;

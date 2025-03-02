@@ -7,7 +7,7 @@
       "skipLibCheck": true,    // Skip library checks for faster compilation
       "forceConsistentCasingInFileNames": true // Ensure consistent casing in file names
     },
-    "include": ["src/**/*", "src/api"],
+    "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]
   }
   
