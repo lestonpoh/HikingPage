@@ -1,7 +1,11 @@
 {
   "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "./dist",  // Ensure this outputs to a relative path
+    "rootDir": "./src",  // Specify the root directory for source files
+    "esModuleInterop": true, // Ensure compatibility with CommonJS modules
+    "skipLibCheck": true,    // Skip library checks for faster compilation
+    "forceConsistentCasingInFileNames": true // Ensure consistent casing in file names
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]
