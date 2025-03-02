@@ -36,4 +36,4 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 //   console.log(`Server running - listening on port ${port}!`);
 // });
 
-module.exports = app;
+export default app;
