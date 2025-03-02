@@ -99,7 +99,8 @@ export const login = [
         .cookie("accessToken", token, {
           // httpOnly: true,
           sameSite: "none",
-          secure: process.env.NODE_ENV === "production",
+          secure: true,
+          // secure: process.env.NODE_ENV === "production",
         })
         .status(200)
         .json({
