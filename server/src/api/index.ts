@@ -1,11 +1,11 @@
 import express, { Express } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import authRoutes from "../src/routes/auth";
-import userRoutes from "../src/routes/users";
-import commentRoutes from "../src/routes/commentRoute";
-import hikeRoutes from "../src/routes/hikeRoute";
-import replyRoutes from "../src/routes/replyRoute";
+import authRoutes from "../routes/auth";
+import userRoutes from "../routes/users";
+import commentRoutes from "../routes/commentRoute";
+import hikeRoutes from "../routes/hikeRoute";
+import replyRoutes from "../routes/replyRoute";
 const path = require("path");
 import dotenv from "dotenv";
 dotenv.config();
