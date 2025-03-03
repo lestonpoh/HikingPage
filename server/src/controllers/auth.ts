@@ -97,10 +97,12 @@ export const login = [
 
       res
         .cookie("accessToken", token, {
-          // httpOnly: true,
+          httpOnly: true,
           sameSite: "none",
           secure: true,
+          path: "/",
           // secure: process.env.NODE_ENV === "production",
+          // domain: process.env.FRONTEND_URL,
         })
         .status(200)
         .json({
@@ -109,6 +111,7 @@ export const login = [
         });
       return;
     } catch (err) {
+      console.log(err);
       res.status(500).json(err);
       return;
     }
